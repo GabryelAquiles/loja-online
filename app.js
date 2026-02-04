@@ -3,7 +3,7 @@ import { getFirestore, collection, getDocs, query, where } from "https://www.gst
 
 // 1. CONFIGURAÇÃO DO FIREBASE (Preencher na escola)
 const firebaseConfig = {
-  apiKey: "COLE_AQUI",
+  apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
   authDomain: "SEU_PROJETO.firebaseapp.com",
   projectId: "SEU_PROJETO",
   storageBucket: "SEU_PROJETO.appspot.com",
@@ -119,5 +119,6 @@ inicializarSaaS();
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
+
 
 
