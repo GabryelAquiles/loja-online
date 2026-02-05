@@ -2,6 +2,8 @@
     --bg: #ffffff;
     --text: #000000;
     --accent: #f0f0f0;
+    /* Essa cor abaixo será trocada pelo Firebase automaticamente */
+    --cor-primaria: #000000; 
     --font: 'Inter', sans-serif;
 }
 
@@ -20,7 +22,20 @@ header {
     letter-spacing: -2px;
 }
 
-header h1 { font-weight: 900; font-size: 3rem; }
+/* O nome da loja usará a cor do Firebase */
+header h1 { 
+    font-weight: 900; 
+    font-size: 3rem; 
+    color: var(--cor-primaria);
+    text-transform: uppercase;
+}
+
+#store-tagline {
+    font-size: 0.8rem;
+    letter-spacing: 5px;
+    font-weight: 400;
+    margin-top: 5px;
+}
 
 #product-grid {
     display: grid;
@@ -31,7 +46,7 @@ header h1 { font-weight: 900; font-size: 3rem; }
 }
 
 .product-card {
-    border-bottom: 2px solid var(--text);
+    border-bottom: 2px solid var(--cor-primaria);
     padding-bottom: 20px;
 }
 
@@ -55,7 +70,7 @@ header h1 { font-weight: 900; font-size: 3rem; }
     position: absolute;
     top: 10px;
     left: 10px;
-    background: var(--text);
+    background: var(--cor-primaria);
     color: var(--bg);
     padding: 5px 12px;
     font-size: 0.7rem;
@@ -78,13 +93,22 @@ header h1 { font-weight: 900; font-size: 3rem; }
 
 .btn-wa {
     width: 100%;
-    background: var(--text);
+    background: var(--cor-primaria);
     color: var(--bg);
     border: none;
     padding: 15px;
     font-weight: 900;
     cursor: pointer;
     transition: 0.3s;
+    text-transform: uppercase;
 }
 
 .btn-wa:hover { opacity: 0.8; }
+
+footer {
+    text-align: center;
+    margin-top: 100px;
+    padding: 40px;
+    font-size: 0.7rem;
+    border-top: 1px solid #eee;
+}
