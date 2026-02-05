@@ -112,3 +112,15 @@ footer {
     font-size: 0.7rem;
     border-top: 1px solid #eee;
 }
+
+#product-grid {
+    display: grid;
+    /* Mudamos aqui: o card não vai passar de 350px nem ficar menor que 300px */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 350px)); 
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    /* Centraliza os cards quando houver poucos itens */
+    justify-content: center; 
+}
+
