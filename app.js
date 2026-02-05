@@ -28,36 +28,25 @@ async function inicializarSaaS() {
     const lojaSlug = urlParams.get('loja') || 'loja-padrao';
 
     try {
-        // --- PARTE A: BUSCAR DADOS DA LOJA (COR, LOGO, NOME) ---
+        // --- PARTE A: BUSCAR DADOS DA LOJA ---
         const qLoja = query(collection(db, "config_lojas"), where("slug", "==", lojaSlug));
         const lojaSnapshot = await getDocs(qLoja);
 
         lojaSnapshot.forEach(doc => {
             const dados = doc.data();
             
-            // Nome da Loja (Atualiza o título no HTML)
+            // 1. Nome da Loja
             if(dados.nome_loja) {
-                const elementoNome = document.getElementById('store-name');
-                if(elementoNome) elementoNome.innerText = dados.nome_loja;
+                const elNome = document.getElementById('store-name');
+                if(elNome) elNome.innerText = dados.nome_loja;
             }
             
-            // COR DINÂMICA (Aplica às variáveis mais comuns de CSS)
+            // 2. Aplica a Cor do Firebase no CSS
             if(dados.cor_tema) {
-                document.documentElement.style.setProperty('--brand', dados.cor_tema);
                 document.documentElement.style.setProperty('--cor-primaria', dados.cor_tema);
-                document.documentElement.style.setProperty('--primary-color', dados.cor_tema);
             }
 
-            // Logo (se houver)
-            if(dados.url_logo) {
-                const header = document.querySelector('header');
-                const imgExistente = document.querySelector('.logo-cliente');
-                if(!imgExistente && header) {
-                    header.insertAdjacentHTML('afterbegin', `<img src="${dados.url_logo}" class="logo-cliente" style="max-height: 50px; margin-bottom: 10px;">`);
-                }
-            }
-
-            // Guarda o telefone para o botão de Whats
+            // 3. Guarda o WhatsApp
             window.lojaTelefone = dados.whatsapp;
         });
 
@@ -66,10 +55,10 @@ async function inicializarSaaS() {
         const querySnapshot = await getDocs(qProd);
         
         if (grid) {
-            grid.innerHTML = ''; // Limpa o "Carregando..."
+            grid.innerHTML = ''; 
 
             if (querySnapshot.empty) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">Nenhum produto encontrado nesta vitrine.</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 50px;">Nenhum produto cadastrado para esta loja.</p>';
                 return;
             }
 
@@ -78,8 +67,8 @@ async function inicializarSaaS() {
                 grid.innerHTML += `
                     <div class="product-card">
                         <div class="image-container">
-                            <img src="${item.url_imagem || 'https://via.placeholder.com/300'}" alt="${item.nome}">
-                            <span class="badge">NOVIDADE</span>
+                            <img src="${item.url_imagem || 'https://via.placeholder.com/400'}" alt="${item.nome}">
+                            <span class="badge">DROP</span>
                         </div>
                         <div class="product-info">
                             <h2>${item.nome}</h2>
@@ -94,12 +83,9 @@ async function inicializarSaaS() {
         }
 
     } catch (error) {
-        console.error("Erro na operação:", error);
-        if (grid) grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">Erro ao carregar produtos.</p>';
+        console.error("Erro:", error);
+        if (grid) grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Erro ao carregar vitrine.</p>';
     }
 }
 
-// Inicia o sistema
 inicializarSaaS();
-
-
