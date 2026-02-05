@@ -124,3 +124,17 @@ footer {
     justify-content: center; 
 }
 
+/* No admin.html, dentro da tag <style>, mude isso: */
+.admin-container { 
+    max-width: 600px; 
+    margin: 40px auto; 
+    padding: 30px; 
+    border: 3px solid #000; /* Mudei de var(--cor-primaria) para #000 */
+    background: #fff; 
+}
+.btn-save { 
+    background: #000; /* Mudei de var(--cor-primaria) para #000 */
+    color: #fff; 
+    /* ... resto do código ... */
+}
+
