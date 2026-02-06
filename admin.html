@@ -41,6 +41,15 @@
             <input type="color" id="cor_tema" value="#000000">
             <button id="btn-salvar-config" style="background-color: #28a745;">Atualizar Loja</button>
         </div>
+            <div class="config-secao">
+            <h3>Menus do Cabeçalho</h3>
+            <div id="lista-links-admin"></div>
+            <div style="display: flex; gap: 5px; margin-top: 10px;">
+            <input type="text" id="menu_texto" placeholder="Ex: Camisetas">
+            <input type="text" id="menu_url" placeholder="Ex: ?cat=camisetas">
+            <button type="button" onclick="adicionarLinkMenu()" style="width: auto;">+</button>
+            </div>
+        </div>
 
         <div class="box">
             <span class="secao-titulo">Inventário</span>
@@ -70,4 +79,5 @@
     <script type="module" src="admin.js"></script>
 </body>
 </html>
+
 
