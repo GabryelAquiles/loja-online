@@ -20,7 +20,7 @@
         .btn-secondary { background: #111; color: #fff; border: 1px solid var(--border); }
         .btn-secondary:hover { background: #222; }
         .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
-        .btn-del { background: #ff4d4d; color: #fff; width: auto; padding: 4px 10px; font-size: 0.7rem; }
+        .btn-del { background: #ff4d4d; color: #fff; width: auto; padding: 4px 10px; font-size: 0.7rem; border: none; cursor: pointer; }
         #lista-links-admin { margin-bottom: 15px; }
     </style>
 </head>
@@ -33,37 +33,52 @@
 
         <div class="box">
             <span class="label-tech">Core Config</span>
-            <label class="label-tech">ID da Loja (Slug)</label>
-            <input type="text" id="loja_id" placeholder="ex: minha-loja">
             
-            <label class="label-tech">Logo (PNG/JPG)</label>
+            <label class="label-tech">ID da Loja (Slug da URL)</label>
+            <input type="text" id="loja_id" placeholder="ex: minha-loja-street">
+            
+            <label class="label-tech">Nome Exibido da Loja</label>
+            <input type="text" id="nome_loja" placeholder="Ex: Aquiles Streetwear">
+
+            <label class="label-tech">WhatsApp de Vendas (Apenas números com DDD)</label>
+            <input type="text" id="whatsapp_loja" placeholder="Ex: 5511999999999">
+            
+            <label class="label-tech">Logo da Marca (Transparente recomendada)</label>
             <input type="file" id="logo_loja">
             
-            <label class="label-tech">Bio da Marca</label>
-            <input type="text" id="desc_loja">
+            <label class="label-tech">Bio / Slogan da Marca</label>
+            <input type="text" id="desc_loja" placeholder="Ex: O futuro do estilo urbano.">
             
-            <label class="label-tech">Cor de Destaque</label>
-            <input type="color" id="cor_tema" style="height: 40px; padding: 2px;">
+            <label class="label-tech">Cor de Destaque (Tema)</label>
+            <input type="color" id="cor_tema" value="#ffffff" style="height: 40px; padding: 2px; cursor: pointer;">
 
             <hr style="border:0; border-top:1px solid #222; margin: 20px 0;">
             
-            <span class="label-tech">Navegação Dinâmica</span>
+            <span class="label-tech">Navegação da Vitrine (Menus)</span>
             <div id="lista-links-admin"></div>
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="menu_texto" placeholder="NOME (ex: Camisetas)" style="margin:0">
-                <input type="text" id="menu_url" placeholder="CATEGORIA (ex: Camisetas)" style="margin:0">
-                <button onclick="adicionarLinkMenu()" style="width:60px">+</button>
+                <input type="text" id="menu_texto" placeholder="TEXTO (Ex: Moletons)" style="margin:0">
+                <input type="text" id="menu_url" placeholder="CATEGORIA (Ex: moletons)" style="margin:0">
+                <button onclick="adicionarLinkMenu()" style="width:60px; background: #222; color: #fff;">+</button>
             </div>
-            <button id="btn-salvar-config" style="margin-top: 20px;">Sincronizar Loja</button>
+            <button id="btn-salvar-config" style="margin-top: 20px;">ATUALIZAR IDENTIDADE DA LOJA</button>
         </div>
 
         <div class="box">
-            <span class="label-tech">Catalog Entry</span>
-            <input type="text" id="nome" placeholder="NOME DO PRODUTO">
-            <input type="text" id="preco" placeholder="PREÇO (0.00)">
-            <input type="text" id="categoria_prod" placeholder="CATEGORIA (idêntica ao menu)">
+            <span class="label-tech">Inventory Management (Produtos)</span>
+            <label class="label-tech">Nome do Produto</label>
+            <input type="text" id="nome" placeholder="NOME DO ITEM">
+            
+            <label class="label-tech">Preço de Venda</label>
+            <input type="text" id="preco" placeholder="99.90">
+            
+            <label class="label-tech">Categoria (Deve ser igual ao Menu acima)</label>
+            <input type="text" id="categoria_prod" placeholder="Ex: moletons">
+            
+            <label class="label-tech">Imagem do Produto</label>
             <input type="file" id="arquivo_imagem">
-            <button id="btn-cadastrar" class="btn-secondary">Publicar Produto</button>
+            
+            <button id="btn-cadastrar" class="btn-secondary">PUBLICAR NO CATÁLOGO</button>
         </div>
 
         <div class="box">
@@ -71,6 +86,7 @@
             <div id="lista-produtos"></div>
         </div>
     </div>
+
     <script type="module" src="admin.js"></script>
 </body>
 </html>
