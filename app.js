@@ -14,9 +14,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.sendWa = function(nome, preco) {
-    const telefone = window.lojaTelefone || "5511999999999"; 
-    const mensagem = encodeURIComponent(`Olá! Tenho interesse no item: ${nome} (R$ ${preco}).`);
-    window.open(`https://wa.me/${telefone}?text=${mensagem}`);
+    const telefone = window.lojaTelefone || "5511999999999";
+    const msg = encodeURIComponent(`Olá! Quero o item: ${nome} (R$ ${preco})`);
+    window.open(`https://wa.me/${telefone}?text=${msg}`);
 }
 
 async function inicializarSaaS() {
@@ -25,41 +25,39 @@ async function inicializarSaaS() {
     const lojaSlug = urlParams.get('loja') || 'loja-verde';
 
     try {
-        // CARREGA CONFIGURAÇÕES DA LOJA
+        // 1. CARREGA CONFIG DA LOJA (CABEÇALHO)
         const qLoja = query(collection(db, "config_lojas"), where("slug", "==", lojaSlug));
         const lojaSnap = await getDocs(qLoja);
 
         lojaSnap.forEach(doc => {
-            const dados = doc.data();
-            if(dados.nome_loja) document.getElementById('store-name').innerText = dados.nome_loja;
-            if(dados.descricao) document.getElementById('store-description').innerText = dados.descricao;
-            if(dados.cor_tema) document.documentElement.style.setProperty('--cor-primaria', dados.cor_tema);
-            if(dados.logo_url) {
-                const img = document.getElementById('store-logo');
-                img.src = dados.logo_url; img.style.display = 'block';
+            const d = doc.data();
+            if(d.nome_loja) document.getElementById('store-name').innerText = d.nome_loja;
+            if(d.descricao) document.getElementById('store-description').innerText = d.descricao;
+            if(d.cor_tema) document.documentElement.style.setProperty('--cor-primaria', d.cor_tema);
+            if(d.logo_url) {
+                const logo = document.getElementById('store-logo');
+                logo.src = d.logo_url; logo.style.display = 'block';
             }
-            window.lojaTelefone = dados.whatsapp;
+            window.lojaTelefone = d.whatsapp;
         });
 
-        // CARREGA PRODUTOS EM TEMPO REAL
+        // 2. CARREGA PRODUTOS (VITRINE)
         const qProd = query(collection(db, "produtos"), where("loja_id", "==", lojaSlug));
         onSnapshot(qProd, (snap) => {
-            if (!grid) return;
-            grid.innerHTML = snap.empty ? '<p>Nenhum produto no momento.</p>' : '';
-            snap.forEach((doc) => {
-                const item = doc.data();
+            grid.innerHTML = snap.empty ? '<p>Sem produtos.</p>' : '';
+            snap.forEach(doc => {
+                const p = doc.data();
                 grid.innerHTML += `
                     <div class="product-card">
-                        <div class="image-container"><img src="${item.url_imagem}" alt="${item.nome}"></div>
+                        <div class="image-container"><img src="${p.url_imagem}"></div>
                         <div class="product-info">
-                            <h2>${item.nome}</h2>
-                            <p class="price">R$ ${item.preco}</p>
-                            <button class="btn-wa" onclick="sendWa('${item.nome}', '${item.preco}')">ADQUIRIR VIA WHATSAPP</button>
+                            <h2>${p.nome}</h2>
+                            <p class="price">R$ ${p.preco}</p>
+                            <button class="btn-wa" onclick="sendWa('${p.nome}', '${p.preco}')">ADQUIRIR VIA WHATSAPP</button>
                         </div>
                     </div>`;
             });
         });
     } catch (e) { console.error(e); }
 }
-
 inicializarSaaS();
