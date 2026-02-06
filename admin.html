@@ -14,48 +14,41 @@
         button { width: 100%; padding: 12px; background-color: #000; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
         button:hover { background-color: #333; }
         button:disabled { background-color: #ccc; cursor: not-allowed; }
-        
-        /* Estilo para o seletor de cor */
         input[type="color"] { height: 50px; padding: 5px; cursor: pointer; }
-
-        /* Lista de produtos */
         .produto-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
         .btn-excluir { background-color: #ff4d4d; width: auto; padding: 8px 15px; font-size: 0.8rem; }
-        .btn-excluir:hover { background-color: #cc0000; }
-        
         .secao-titulo { color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        
+        <div class="box">
+            <span class="secao-titulo">Acesso ao Painel</span>
+            <h2>🔑 Identificação da Loja</h2>
+            <label>ID da sua Loja (Slug)</label>
+            <input type="text" id="loja_id" value="loja-verde" placeholder="Ex: minha-loja">
+        </div>
+
         <div class="box">
             <span class="secao-titulo">Personalização</span>
             <h2>🎨 Identidade da Loja</h2>
-            
             <label>Logo da Loja</label>
             <input type="file" id="logo_loja" accept="image/*">
-            
-            <label>Descrição / Bio (Aparece no topo)</label>
-            <input type="text" id="desc_loja" placeholder="Ex: Streetwear autêntico de SP">
-            
-            <label>Cor do Tema (Botões e Títulos)</label>
+            <label>Descrição / Bio</label>
+            <input type="text" id="desc_loja" placeholder="Ex: Streetwear autêntico">
+            <label>Cor do Tema</label>
             <input type="color" id="cor_tema" value="#000000">
-            
             <button id="btn-salvar-config" style="background-color: #28a745;">Atualizar Loja</button>
         </div>
 
         <div class="box">
             <span class="secao-titulo">Inventário</span>
             <h2>📦 Novo Produto</h2>
-            
             <label>Nome do Produto</label>
             <input type="text" id="nome" placeholder="Ex: Camiseta Oversized">
-            
             <label>Preço (R$)</label>
             <input type="text" id="preco" placeholder="Ex: 129.90">
-
             <label>Categoria</label>
             <select id="categoria">
                 <option value="Camisetas">Camisetas</option>
@@ -63,32 +56,17 @@
                 <option value="Calças">Calças</option>
                 <option value="Acessórios">Acessórios</option>
             </select>
-            
             <label>Foto do Produto</label>
             <input type="file" id="arquivo_imagem" accept="image/*">
-            
-            <input type="hidden" id="loja_id" value="loja-verde">
-            
             <button id="btn-cadastrar">Publicar no Catálogo</button>
         </div>
 
         <div class="box">
             <h2>🛒 Gerenciar Produtos</h2>
-            <div id="lista-produtos">
-                <p style="text-align: center; color: #999;">Carregando...</p>
-            </div>
+            <div id="lista-produtos"></div>
         </div>
-        
     </div>
-    <div class="box">
-        <span class="secao-titulo">Acesso ao Painel</span>
-        <h2>🔑 Identificação da Loja</h2>
-        <label>ID da sua Loja (Slug)</label>
-        <input type="text" id="loja_id" value="loja-verde" placeholder="Ex: minha-loja-top">
-        <p style="font-size: 0.7rem; color: #666;">* Digite o ID para carregar seus produtos e configurações.</p>
-    </div>
-    <script type="module" src="admin.js"></script>
 
+    <script type="module" src="admin.js"></script>
 </body>
 </html>
-
