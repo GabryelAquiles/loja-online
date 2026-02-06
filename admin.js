@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 const firebaseConfig = {
     apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
     authDomain: "aquiles-sw-saas.firebaseapp.com",
@@ -13,6 +13,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const IMGBB_API_KEY = "a4f3b254234cb475b12a0f303a1b30f7";
+const auth = getAuth(app);
+
+// VERIFICA SE ESTÁ LOGADO
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        // Se não tiver usuário logado, chuta de volta para o login
+        window.location.href = "login.html";
+    }
+});
+
+// ADICIONE UM BOTÃO DE LOGOUT NO SEU HTML E ESTA FUNÇÃO:
+window.fazerLogout = () => {
+    signOut(auth).then(() => {
+        window.location.href = "login.html";
+    });
+}
 
 // SALVAR CONFIGURAÇÕES DA LOJA
 document.getElementById('btn-salvar-config').addEventListener('click', async () => {
@@ -105,3 +121,4 @@ window.removerProduto = async (id) => {
 
 document.getElementById('loja_id').addEventListener('change', carregarProdutos);
 carregarProdutos();
+
