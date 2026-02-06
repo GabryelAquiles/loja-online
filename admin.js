@@ -1,6 +1,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const auth = getAuth(app);
+
+// Se o usuário não estiver logado, ele é jogado para a página de login na hora
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "login.html";
+    }
+});
 const firebaseConfig = {
     apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
     authDomain: "aquiles-sw-saas.firebaseapp.com",
@@ -121,4 +131,5 @@ window.removerProduto = async (id) => {
 
 document.getElementById('loja_id').addEventListener('change', carregarProdutos);
 carregarProdutos();
+
 
