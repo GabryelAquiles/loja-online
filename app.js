@@ -85,8 +85,24 @@ async function inicializarSaaS() {
         if (grid) grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Erro ao carregar vitrine.</p>';
     }
 }
+// Dentro do inicializarSaaS, na parte da Loja:
+lojaSnapshot.forEach(doc => {
+    const dados = doc.data();
+    
+    // Carrega a Logo
+    const elLogo = document.getElementById('store-logo');
+    if(dados.logo_url && elLogo) {
+        elLogo.src = dados.logo_url;
+        elLogo.style.display = 'block'; // Mostra a imagem
+    }
 
-inicializarSaaS();
-inicializarSaaS();
-
+    // Carrega a Descrição
+    const elDesc = document.getElementById('store-description');
+    if(dados.descricao && elDesc) {
+        elDesc.innerText = dados.descricao;
+    }
+    
+    // ... resto do código de cor e nome ...
+});
+inicializarSaaS():;
 
