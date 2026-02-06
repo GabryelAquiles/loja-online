@@ -96,3 +96,31 @@ header h1 {
 }
 
 .btn-wa:hover { background: #128C7E; }
+
+#main-nav {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+}
+
+#menu-list {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 25px;
+    padding: 15px 0;
+}
+
+#menu-list a {
+    text-decoration: none;
+    color: #333;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+#menu-list a:hover {
+    color: var(--cor-primaria);
+}
