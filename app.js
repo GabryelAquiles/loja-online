@@ -60,4 +60,14 @@ async function inicializarSaaS() {
         });
     } catch (e) { console.error(e); }
 }
+// Exemplo de como deve estar no seu app.js
+if (d.links_cabecalho && d.links_cabecalho.length > 0) {
+    const menuList = document.getElementById('menu-list');
+    menuList.innerHTML = d.links_cabecalho.map(link => `
+        <li><a href="${link.url}">${link.texto}</a></li>
+    `).join('');
+}
+
+
 inicializarSaaS();
+
