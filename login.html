@@ -2,43 +2,59 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Aquiles SW</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Administrativo - Aquiles SW</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; margin: 0; }
-        .login-box { background: white; padding: 40px; border-radius: 12px; shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
-        h2 { text-align: center; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #000; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        h2 { margin-bottom: 25px; color: #333; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        button { width: 100%; padding: 12px; background-color: #000; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #333; }
+        #mensagem-erro { color: #ff4d4d; font-size: 0.85rem; margin-top: 15px; display: none; }
+        .back-link { display: block; margin-top: 20px; color: #666; text-decoration: none; font-size: 0.8rem; }
     </style>
 </head>
 <body>
-    <div class="login-box">
-        <h2>Área do Lojista</h2>
-        <input type="email" id="email" placeholder="E-mail">
-        <input type="password" id="senha" placeholder="Senha">
-        <button id="btn-login">Entrar no Painel</button>
-        <p id="erro" style="color: red; font-size: 0.8rem; margin-top: 10px; display: none;"></p>
+
+    <div class="login-card">
+        <h2>Painel Aquiles</h2>
+        <input type="email" id="email" placeholder="Seu e-mail">
+        <input type="password" id="senha" placeholder="Sua senha">
+        <button id="btn-entrar">ENTRAR NO SISTEMA</button>
+        <p id="mensagem-erro">E-mail ou senha incorretos.</p>
+        <a href="index.html" class="back-link">← Voltar para a vitrine</a>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        const firebaseConfig = { /* COLE AQUI SUA CONFIGURAÇÃO IGUAL DO ADMIN.JS */ };
+        // CONFIGURAÇÃO FIREBASE (A mesma que você já usa)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
+            authDomain: "aquiles-sw-saas.firebaseapp.com",
+            projectId: "aquiles-sw-saas",
+            storageBucket: "aquiles-sw-saas.appspot.com",
+            messagingSenderId: "878262536684",
+            appId: "1:878262536684:web:e32ac0b9755ca101e398c9"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        document.getElementById('btn-login').addEventListener('click', async () => {
+        document.getElementById('btn-entrar').addEventListener('click', async () => {
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
-            const erroEl = document.getElementById('erro');
+            const msgErro = document.getElementById('mensagem-erro');
 
             try {
                 await signInWithEmailAndPassword(auth, email, senha);
-                window.location.href = "admin.html"; // Vai para o admin se der certo
+                // Se der certo, redireciona para o admin
+                window.location.href = "admin.html";
             } catch (error) {
-                erroEl.innerText = "Usuário ou senha inválidos.";
-                erroEl.style.display = "block";
+                console.error("Erro no login:", error);
+                msgErro.style.display = "block";
             }
         });
     </script>
