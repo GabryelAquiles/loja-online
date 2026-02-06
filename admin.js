@@ -1,16 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const auth = getAuth(app);
-
-// Se o usuário não estiver logado, ele é jogado para a página de login na hora
-onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        window.location.href = "login.html";
-    }
-});
 const firebaseConfig = {
     apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
     authDomain: "aquiles-sw-saas.firebaseapp.com",
@@ -20,25 +11,25 @@ const firebaseConfig = {
     appId: "1:878262536684:web:e32ac0b9755ca101e398c9"
 };
 
+// Inicialização
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const IMGBB_API_KEY = "a4f3b254234cb475b12a0f303a1b30f7";
 const auth = getAuth(app);
+const IMGBB_API_KEY = "a4f3b254234cb475b12a0f303a1b30f7";
 
-// VERIFICA SE ESTÁ LOGADO
+// --- SEGURANÇA: VERIFICA SE ESTÁ LOGADO ---
 onAuthStateChanged(auth, (user) => {
     if (!user) {
-        // Se não tiver usuário logado, chuta de volta para o login
         window.location.href = "login.html";
     }
 });
 
-// ADICIONE UM BOTÃO DE LOGOUT NO SEU HTML E ESTA FUNÇÃO:
+// FUNÇÃO DE LOGOUT
 window.fazerLogout = () => {
     signOut(auth).then(() => {
         window.location.href = "login.html";
     });
-}
+};
 
 // SALVAR CONFIGURAÇÕES DA LOJA
 document.getElementById('btn-salvar-config').addEventListener('click', async () => {
@@ -70,6 +61,8 @@ document.getElementById('btn-salvar-config').addEventListener('click', async () 
             if (urlLogoFinal) novosDados.logo_url = urlLogoFinal;
             await updateDoc(lojaDocRef, novosDados);
             alert("LOJA ATUALIZADA!");
+        } else {
+            alert("Loja não encontrada. Verifique o ID (Slug).");
         }
     } catch (e) { alert("Erro: " + e.message); }
     btn.innerText = "Atualizar Loja"; btn.disabled = false;
@@ -117,8 +110,10 @@ function carregarProdutos() {
             const div = document.createElement('div');
             div.className = "produto-item";
             div.innerHTML = `
-                <div><strong>${item.nome}</strong><br><small>${item.categoria}</small></div>
-                <button class="btn-excluir" onclick="removerProduto('${recurso.id}')">Excluir</button>
+                <div style="margin-bottom:10px; border-bottom:1px solid #eee; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <div><strong>${item.nome}</strong><br><small>${item.categoria}</small></div>
+                    <button class="btn-excluir" onclick="removerProduto('${recurso.id}')">Excluir</button>
+                </div>
             `;
             listaArea.appendChild(div);
         });
@@ -131,5 +126,3 @@ window.removerProduto = async (id) => {
 
 document.getElementById('loja_id').addEventListener('change', carregarProdutos);
 carregarProdutos();
-
-
