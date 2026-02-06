@@ -1,5 +1,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    onSnapshot, 
+    deleteDoc, 
+    doc, 
+    query, 
+    where, 
+    getDocs, 
+    updateDoc 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // 1. CONFIGURAÇÃO FIREBASE
 const firebaseConfig = {
@@ -14,27 +25,79 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 2. CONFIGURAÇÃO IMGBB (Sua chave)
+// 2. CONFIGURAÇÃO IMGBB
 const IMGBB_API_KEY = "a4f3b254234cb475b12a0f303a1b30f7"; 
 
-// --- FUNÇÃO PARA CADASTRAR COM UPLOAD ---
+// --- FUNÇÃO A: ATUALIZAR IDENTIDADE DA LOJA ---
+document.getElementById('btn-salvar-config').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-salvar-config');
+    const arquivoLogo = document.getElementById('logo_loja').files[0];
+    const descricao = document.getElementById('desc_loja').value;
+    const cor = document.getElementById('cor_tema').value;
+    const loja_slug = document.getElementById('loja_id').value;
+
+    btn.innerText = "Salvando...";
+    btn.disabled = true;
+
+    try {
+        let urlLogoFinal = null;
+
+        // Se houver arquivo de logo, faz upload
+        if (arquivoLogo) {
+            const formData = new FormData();
+            formData.append("image", arquivoLogo);
+            const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: "POST",
+                body: formData
+            });
+            const json = await resp.json();
+            urlLogoFinal = json.data.url;
+        }
+
+        // Busca o documento da loja para atualizar
+        const q = query(collection(db, "config_lojas"), where("slug", "==", loja_slug));
+        const snap = await getDocs(q);
+
+        if (!snap.empty) {
+            const lojaDocRef = doc(db, "config_lojas", snap.docs[0].id);
+            const novosDados = {
+                descricao: descricao,
+                cor_tema: cor
+            };
+            if (urlLogoFinal) novosDados.logo_url = urlLogoFinal;
+
+            await updateDoc(lojaDocRef, novosDados);
+            alert("IDENTIDADE DA LOJA ATUALIZADA!");
+        } else {
+            alert("Erro: Loja não encontrada no banco.");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Erro ao salvar: " + e.message);
+    } finally {
+        btn.innerText = "Atualizar Loja";
+        btn.disabled = false;
+    }
+});
+
+// --- FUNÇÃO B: CADASTRAR PRODUTO COM CATEGORIA ---
 document.getElementById('btn-cadastrar').addEventListener('click', async () => {
     const btn = document.getElementById('btn-cadastrar');
     const nome = document.getElementById('nome').value;
     const preco = document.getElementById('preco').value;
+    const categoria = document.getElementById('categoria').value;
     const arquivo = document.getElementById('arquivo_imagem').files[0];
     const loja_id = document.getElementById('loja_id').value;
 
     if (!nome || !preco || !arquivo) {
-        alert("Preencha o nome, preço e selecione uma foto!");
+        alert("Preencha nome, preço e foto!");
         return;
     }
 
-    btn.innerText = "Subindo imagem...";
+    btn.innerText = "Publicando...";
     btn.disabled = true;
 
     try {
-        // A. Upload para ImgBB
         const formData = new FormData();
         formData.append("image", arquivo);
 
@@ -45,38 +108,37 @@ document.getElementById('btn-cadastrar').addEventListener('click', async () => {
         const json = await resp.json();
         const urlFinal = json.data.url;
 
-        // B. Salvar no Firestore
         await addDoc(collection(db, "produtos"), {
             nome: nome,
             preco: preco,
+            categoria: categoria,
             url_imagem: urlFinal,
-            loja_id: loja_id
+            loja_id: loja_id,
+            data_criacao: new Date()
         });
 
-        alert("PRODUTO PUBLICADO COM SUCESSO!");
+        alert("PRODUTO PUBLICADO!");
         
-        // Limpa campos
+        // Limpar campos
         document.getElementById('nome').value = "";
         document.getElementById('preco').value = "";
         document.getElementById('arquivo_imagem').value = "";
         
     } catch (e) {
-        console.error("Erro:", e);
-        alert("Erro ao publicar: " + e.message);
+        alert("Erro: " + e.message);
     } finally {
-        btn.innerText = "Publicar";
+        btn.innerText = "Publicar no Catálogo";
         btn.disabled = false;
     }
 });
 
-// --- FUNÇÃO PARA LISTAR E EXCLUIR (REAL-TIME) ---
+// --- FUNÇÃO C: LISTAR E EXCLUIR PRODUTOS ---
 function carregarProdutosGestao() {
     const listaArea = document.getElementById('lista-produtos');
     const lojaIdAtual = document.getElementById('loja_id').value;
 
     const q = query(collection(db, "produtos"), where("loja_id", "==", lojaIdAtual));
 
-    // onSnapshot faz a lista atualizar sozinha quando algo muda no banco
     onSnapshot(q, (querySnapshot) => {
         listaArea.innerHTML = ""; 
 
@@ -85,27 +147,28 @@ function carregarProdutosGestao() {
             const id = recurso.id;
 
             const div = document.createElement('div');
+            div.className = "produto-item";
             div.style = "display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding:10px 0;";
             div.innerHTML = `
-                <span><strong>${item.nome}</strong> - R$ ${item.preco}</span>
-                <button onclick="removerProduto('${id}')" style="background:red; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Excluir</button>
+                <div class="info-prod">
+                    <span class="nome-prod">${item.nome}</span>
+                    <span class="preco-prod">R$ ${item.preco} | ${item.categoria || 'Geral'}</span>
+                </div>
+                <button class="btn-excluir" onclick="removerProduto('${id}')">Excluir</button>
             `;
             listaArea.appendChild(div);
         });
     });
 }
 
-// Função global para o botão de excluir funcionar
 window.removerProduto = async (id) => {
-    if (confirm("Tem certeza que deseja excluir este produto?")) {
+    if (confirm("Deseja excluir este produto?")) {
         try {
             await deleteDoc(doc(db, "produtos", id));
-            alert("Produto removido!");
         } catch (e) {
-            alert("Erro ao excluir: " + e.message);
+            alert("Erro: " + e.message);
         }
     }
 };
 
-// Inicia a lista assim que abrir a página
 carregarProdutosGestao();
