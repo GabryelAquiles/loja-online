@@ -3,92 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Aquiles SW</title>
+    <title>AQUILESSW | ADMIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 600px; margin: auto; }
-        .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { margin-top: 0; font-size: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #000; }
-        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.9rem; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        button { width: 100%; padding: 12px; background-color: #000; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #333; }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
-        input[type="color"] { height: 50px; padding: 5px; cursor: pointer; }
-        .produto-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
-        .btn-excluir { background-color: #ff4d4d; width: auto; padding: 8px 15px; font-size: 0.8rem; }
-        .secao-titulo { color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
-        
-        /* Estilos para o Menu Interativo */
-        #lista-links-admin div { background: #f9f9f9; border: 1px solid #eee; padding: 10px; border-radius: 6px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
-        .btn-logout { background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d; width: auto; padding: 5px 15px; margin-bottom: 20px; font-size: 0.8rem; }
-        .btn-logout:hover { background: #ff4d4d; color: white; }
+        :root { --bg: #000; --card: #0a0a0a; --border: #222; --accent: #fff; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
+        h1 { font-weight: 900; letter-spacing: -1px; font-size: 1.2rem; }
+        .box { background: var(--card); border: 1px solid var(--border); padding: 25px; margin-bottom: 20px; }
+        .label-tech { font-size: 0.65rem; color: #555; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+        input, select, textarea { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; margin-bottom: 15px; outline: none; font-family: inherit; }
+        input:focus { border-color: #555; }
+        button { width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #bbb; }
+        .btn-secondary { background: #111; color: #fff; border: 1px solid var(--border); }
+        .btn-secondary:hover { background: #222; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+        .btn-del { background: #ff4d4d; color: #fff; width: auto; padding: 4px 10px; font-size: 0.7rem; }
+        #lista-links-admin { margin-bottom: 15px; }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <div style="text-align: right;">
-            <button class="btn-logout" onclick="fazerLogout()">SAIR DO SISTEMA</button>
-        </div>
+        <header>
+            <h1>AQUILESSW // SYSTEM v1.0</h1>
+            <button onclick="fazerLogout()" style="width:auto; padding: 5px 15px; font-size: 0.7rem;" class="btn-secondary">LOGOUT</button>
+        </header>
 
         <div class="box">
-            <span class="secao-titulo">Acesso ao Painel</span>
-            <h2>🔑 Identificação da Loja</h2>
-            <label>ID da sua Loja (Slug)</label>
-            <input type="text" id="loja_id" value="loja-verde" placeholder="Ex: minha-loja">
-        </div>
+            <span class="label-tech">Core Config</span>
+            <label class="label-tech">ID da Loja (Slug)</label>
+            <input type="text" id="loja_id" placeholder="ex: minha-loja">
+            
+            <label class="label-tech">Logo (PNG/JPG)</label>
+            <input type="file" id="logo_loja">
+            
+            <label class="label-tech">Bio da Marca</label>
+            <input type="text" id="desc_loja">
+            
+            <label class="label-tech">Cor de Destaque</label>
+            <input type="color" id="cor_tema" style="height: 40px; padding: 2px;">
 
-        <div class="box">
-            <span class="secao-titulo">Personalização</span>
-            <h2>🎨 Identidade da Loja</h2>
-            <label>Logo da Loja</label>
-            <input type="file" id="logo_loja" accept="image/*">
-            <label>Descrição / Bio</label>
-            <input type="text" id="desc_loja" placeholder="Ex: Streetwear autêntico">
-            <label>Cor do Tema</label>
-            <input type="color" id="cor_tema" value="#000000">
+            <hr style="border:0; border-top:1px solid #222; margin: 20px 0;">
             
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-            
-            <span class="secao-titulo">Navegação</span>
-            <h3>🔗 Menus do Cabeçalho</h3>
+            <span class="label-tech">Navegação Dinâmica</span>
             <div id="lista-links-admin"></div>
-            <div style="display: flex; gap: 5px; margin-top: 10px;">
-                <input type="text" id="menu_texto" placeholder="Ex: Camisetas" style="margin-bottom:0">
-                <input type="text" id="menu_url" placeholder="Ex: ?cat=camisetas" style="margin-bottom:0">
-                <button type="button" onclick="adicionarLinkMenu()" style="width: 50px; background: #28a745;">+</button>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="menu_texto" placeholder="NOME (ex: Camisetas)" style="margin:0">
+                <input type="text" id="menu_url" placeholder="CATEGORIA (ex: Camisetas)" style="margin:0">
+                <button onclick="adicionarLinkMenu()" style="width:60px">+</button>
             </div>
-            
-            <button id="btn-salvar-config" style="background-color: #28a745; margin-top: 20px;">Atualizar Loja e Menus</button>
+            <button id="btn-salvar-config" style="margin-top: 20px;">Sincronizar Loja</button>
         </div>
 
         <div class="box">
-            <span class="secao-titulo">Inventário</span>
-            <h2>📦 Novo Produto</h2>
-            <label>Nome do Produto</label>
-            <input type="text" id="nome" placeholder="Ex: Camiseta Oversized">
-            <label>Preço (R$)</label>
-            <input type="text" id="preco" placeholder="Ex: 129.90">
-            <label>Categoria</label>
-            <select id="categoria">
-                <option value="Camisetas">Camisetas</option>
-                <option value="Moletons">Moletons</option>
-                <option value="Calças">Calças</option>
-                <option value="Acessórios">Acessórios</option>
-            </select>
-            <label>Foto do Produto</label>
-            <input type="file" id="arquivo_imagem" accept="image/*">
-            <button id="btn-cadastrar">Publicar no Catálogo</button>
+            <span class="label-tech">Catalog Entry</span>
+            <input type="text" id="nome" placeholder="NOME DO PRODUTO">
+            <input type="text" id="preco" placeholder="PREÇO (0.00)">
+            <input type="text" id="categoria_prod" placeholder="CATEGORIA (idêntica ao menu)">
+            <input type="file" id="arquivo_imagem">
+            <button id="btn-cadastrar" class="btn-secondary">Publicar Produto</button>
         </div>
 
         <div class="box">
-            <span class="secao-titulo">Exposição</span>
-            <h2>🛒 Gerenciar Produtos</h2>
+            <span class="label-tech">Active Inventory</span>
             <div id="lista-produtos"></div>
         </div>
     </div>
-
     <script type="module" src="admin.js"></script>
 </body>
 </html>
