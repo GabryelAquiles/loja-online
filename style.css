@@ -2,8 +2,8 @@
     --bg: #ffffff;
     --text: #000000;
     --accent: #f0f0f0;
-    /* Essa cor abaixo será trocada pelo Firebase automaticamente */
-    --cor-primaria: #000000; 
+    --cor-primaria: #000000; /* Mudada pelo Admin */
+    --cor-whatsapp: #25D366; /* Cor fixa oficial */
     --font: 'Inter', sans-serif;
 }
 
@@ -19,39 +19,49 @@ body {
 header {
     text-align: center;
     margin-bottom: 50px;
-    letter-spacing: -2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* O nome da loja usará a cor do Firebase */
 header h1 { 
     font-weight: 900; 
     font-size: 3rem; 
-    color: var(--cor-primaria);
+    color: var(--cor-primaria); /* Segue o Admin */
     text-transform: uppercase;
+    letter-spacing: -2px;
 }
 
-#store-tagline {
+#store-logo {
+    max-width: 150px;
+    margin-bottom: 15px;
+    display: none; /* Só aparece se o Admin tiver logo */
+}
+
+#store-description {
     font-size: 0.8rem;
-    letter-spacing: 5px;
-    font-weight: 400;
-    margin-top: 5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    opacity: 0.7;
 }
 
 #product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 40px;
     max-width: 1200px;
     margin: 0 auto;
+    justify-content: center;
 }
 
 .product-card {
     border-bottom: 2px solid var(--cor-primaria);
     padding-bottom: 20px;
+    transition: 0.3s;
 }
 
 .image-container {
-    position: relative;
     background-color: var(--accent);
     aspect-ratio: 3/4;
     overflow: hidden;
@@ -61,71 +71,28 @@ header h1 {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
 }
-
-.image-container:hover img { transform: scale(1.05); }
-
-
-.product-info { margin-top: 15px; }
 
 .product-info h2 {
     font-size: 1.1rem;
+    margin-top: 15px;
     font-weight: 900;
     text-transform: uppercase;
 }
 
-.price {
-    font-size: 1rem;
-    margin: 5px 0 20px;
-    color: #666;
-}
+.price { color: #666; margin: 5px 0 15px; }
 
+/* BOTÃO WHATSAPP - COR FIXA */
 .btn-wa {
     width: 100%;
-    background: var(--cor-primaria);
-    color: var(--bg);
+    background: var(--cor-whatsapp);
+    color: #fff;
     border: none;
     padding: 15px;
     font-weight: 900;
     cursor: pointer;
-    transition: 0.3s;
     text-transform: uppercase;
+    transition: 0.3s;
 }
 
-.btn-wa:hover { opacity: 0.8; }
-
-footer {
-    text-align: center;
-    margin-top: 100px;
-    padding: 40px;
-    font-size: 0.7rem;
-    border-top: 1px solid #eee;
-}
-
-#product-grid {
-    display: grid;
-    /* Mudamos aqui: o card não vai passar de 350px nem ficar menor que 300px */
-    grid-template-columns: repeat(auto-fill, minmax(300px, 350px)); 
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-    /* Centraliza os cards quando houver poucos itens */
-    justify-content: center; 
-}
-
-/* No admin.html, dentro da tag <style>, mude isso: */
-.admin-container { 
-    max-width: 600px; 
-    margin: 40px auto; 
-    padding: 30px; 
-    border: 3px solid #000; /* Mudei de var(--cor-primaria) para #000 */
-    background: #fff; 
-}
-.btn-save { 
-    background: #000; /* Mudei de var(--cor-primaria) para #000 */
-    color: #fff; 
-    /* ... resto do código ... */
-}
-
-
+.btn-wa:hover { background: #128C7E; }
