@@ -202,5 +202,31 @@ window.removerProduto = async (id) => {
 // Monitora mudança no ID da loja para atualizar a lista automaticamente
 document.getElementById('loja_id').addEventListener('input', carregarProdutosGestao);
 
+let linksTemporarios = [];
+
+window.adicionarLinkMenu = () => {
+    const texto = document.getElementById('menu_texto').value;
+    const url = document.getElementById('menu_url').value;
+    if(texto && url) {
+        linksTemporarios.push({ texto, url });
+        renderizarLinksAdmin();
+        document.getElementById('menu_texto').value = "";
+        document.getElementById('menu_url').value = "";
+    }
+};
+
+function renderizarLinksAdmin() {
+    const div = document.getElementById('lista-links-admin');
+    div.innerHTML = linksTemporarios.map((link, index) => `
+        <div style="font-size: 0.8rem; background: #eee; padding: 5px; margin-bottom: 5px; display: flex; justify-content: space-between;">
+            ${link.texto} 
+            <span onclick="linksTemporarios.splice(${index}, 1); renderizarLinksAdmin()" style="color:red; cursor:pointer;">(x)</span>
+        </div>
+    `).join('');
+}
+
+// ATENÇÃO: No seu 'btn-salvar-config', adicione 'links_cabecalho: linksTemporarios' nos novosDados.
+
 // Inicializa a lista no carregamento
 carregarProdutosGestao();
+
