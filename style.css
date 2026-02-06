@@ -1,10 +1,11 @@
 :root {
-    --bg: #ffffff;
-    --text: #000000;
-    --accent: #f0f0f0;
-    --cor-primaria: #000000; /* Mudada pelo Admin */
-    --cor-whatsapp: #25D366; /* Cor fixa oficial */
+    --bg: #050505; /* Fundo imersivo escuro */
+    --text: #ffffff;
+    --accent: #111111; /* Contraste para cards */
+    --cor-primaria: #ffffff; 
+    --cor-whatsapp: #25D366; 
     --font: 'Inter', sans-serif;
+    --border: #1a1a1a;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -13,12 +14,14 @@ body {
     background-color: var(--bg);
     color: var(--text);
     font-family: var(--font);
-    padding: 20px;
+    padding: 0 20px 40px;
+    -webkit-font-smoothing: antialiased;
 }
 
+/* --- HEADER --- */
 header {
     text-align: center;
-    margin-bottom: 50px;
+    padding: 60px 0 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -26,101 +29,156 @@ header {
 
 header h1 { 
     font-weight: 900; 
-    font-size: 3rem; 
-    color: var(--cor-primaria); /* Segue o Admin */
+    font-size: 3.5rem; 
+    color: var(--cor-primaria);
     text-transform: uppercase;
-    letter-spacing: -2px;
+    letter-spacing: -3px;
+    line-height: 1;
 }
 
 #store-logo {
-    max-width: 150px;
-    margin-bottom: 15px;
-    display: none; /* Só aparece se o Admin tiver logo */
+    max-width: 120px;
+    margin-bottom: 20px;
+    display: none;
+    filter: brightness(1);
 }
 
 #store-description {
-    font-size: 0.8rem;
-    letter-spacing: 2px;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    margin-top: 10px;
-    opacity: 0.7;
-}
-
-#product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-    justify-content: center;
-}
-
-.product-card {
-    border-bottom: 2px solid var(--cor-primaria);
-    padding-bottom: 20px;
-    transition: 0.3s;
-}
-
-.image-container {
-    background-color: var(--accent);
-    aspect-ratio: 3/4;
-    overflow: hidden;
-}
-
-.image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.product-info h2 {
-    font-size: 1.1rem;
     margin-top: 15px;
-    font-weight: 900;
-    text-transform: uppercase;
+    color: #666;
 }
 
-.price { color: #666; margin: 5px 0 15px; }
-
-/* BOTÃO WHATSAPP - COR FIXA */
-.btn-wa {
-    width: 100%;
-    background: var(--cor-whatsapp);
-    color: #fff;
-    border: none;
-    padding: 15px;
-    font-weight: 900;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: 0.3s;
-}
-
-.btn-wa:hover { background: #128C7E; }
-
+/* --- NAVEGAÇÃO / CATEGORIAS --- */
 #main-nav {
-    margin-top: 20px;
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee;
+    margin-top: 40px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
     width: 100%;
+    max-width: 1200px;
 }
 
 #menu-list {
     display: flex;
     justify-content: center;
     list-style: none;
-    gap: 25px;
-    padding: 15px 0;
+    gap: 30px;
+    padding: 20px 0;
+    flex-wrap: wrap;
 }
 
 #menu-list a {
     text-decoration: none;
-    color: #333;
-    font-size: 0.85rem;
+    color: #888;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 500;
+    letter-spacing: 2px;
+    font-weight: 700;
+    transition: 0.3s;
 }
 
 #menu-list a:hover {
-    color: var(--cor-primaria);
+    color: #fff;
+}
+
+/* --- GRID DE PRODUTOS --- */
+#product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.product-card {
+    background: var(--accent);
+    border: 1px solid var(--border);
+    padding: 10px;
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.3s;
+}
+
+.product-card:hover {
+    border-color: #444;
+    transform: translateY(-5px);
+}
+
+.image-container {
+    background-color: #000;
+    aspect-ratio: 1/1; /* Quadrado para Streetwear */
+    overflow: hidden;
+    position: relative;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.5s ease;
+}
+
+.product-card:hover .image-container img {
+    transform: scale(1.05);
+}
+
+/* --- INFORMAÇÕES DO PRODUTO --- */
+.product-info {
+    padding: 15px 5px;
+}
+
+.product-info h2 {
+    font-size: 0.9rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.price { 
+    color: #888; 
+    margin-bottom: 20px; 
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+/* --- BOTÃO WHATSAPP --- */
+.btn-wa {
+    width: 100%;
+    background: #fff; /* Invertido para o tema dark */
+    color: #000;
+    border: none;
+    padding: 18px;
+    font-weight: 900;
+    font-size: 0.75rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+
+.btn-wa:hover {
+    background: var(--cor-whatsapp);
+    color: #fff;
+}
+
+/* --- FOOTER --- */
+footer {
+    text-align: center;
+    padding: 60px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+}
+
+footer p {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: #444;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+    header h1 { font-size: 2.2rem; }
+    #product-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+    .btn-wa { padding: 12px; font-size: 0.65rem; }
 }
