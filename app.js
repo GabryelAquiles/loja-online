@@ -27,7 +27,7 @@ async function inicializarSaaS() {
     
     // Parâmetros da URL
     const lojaSlug = urlParams.get('loja') || 'loja-verde';
-    const categoriaFiltro = urlParams.get('cat');
+    let categoriaFiltro = urlParams.get('cat');
 
     try {
         // 1. CARREGA CONFIGURAÇÕES DA LOJA
@@ -43,7 +43,6 @@ async function inicializarSaaS() {
             const d = doc.data();
             window.lojaTelefone = d.whatsapp;
 
-            // Preenche Cabeçalho
             document.getElementById('store-name').innerText = d.nome_loja || d.slug.toUpperCase();
             document.getElementById('store-description').innerText = d.descricao || "";
             
@@ -55,14 +54,21 @@ async function inicializarSaaS() {
                 logo.style.display = 'block';
             }
 
-            // Gera o Menu Interativo
+            // Gera o Menu Interativo Corrigido
             if (d.links_cabecalho && d.links_cabecalho.length > 0) {
                 menuList.innerHTML = d.links_cabecalho.map(link => {
-                    // Mantém o slug da loja ao clicar nas categorias
-                    let hrefFinal = link.url;
-                    if (link.url.startsWith('?cat=')) {
-                        hrefFinal = `?loja=${lojaSlug}${link.url.replace('?', '&')}`;
+                    let urlDestino = link.url;
+                    
+                    // Se o lojista escreveu apenas "Camisetas", transformamos em link de filtro
+                    if (!urlDestino.startsWith('?') && !urlDestino.startsWith('http')) {
+                        urlDestino = `?cat=${urlDestino}`;
                     }
+
+                    // Monta o link final preservando o slug da loja
+                    const hrefFinal = urlDestino.startsWith('?cat=') 
+                        ? `?loja=${lojaSlug}${urlDestino.replace('?', '&')}` 
+                        : urlDestino;
+
                     return `<li><a href="${hrefFinal}">${link.texto}</a></li>`;
                 }).join('');
             }
@@ -71,10 +77,13 @@ async function inicializarSaaS() {
         // 2. CARREGA PRODUTOS (COM OU SEM FILTRO)
         let qProd;
         if (categoriaFiltro) {
+            // decodeURIComponent limpa espaços e caracteres da URL para comparar com o banco
+            const categoriaLimpa = decodeURIComponent(categoriaFiltro);
+            
             qProd = query(
                 collection(db, "produtos"), 
                 where("loja_id", "==", lojaSlug),
-                where("categoria", "==", categoriaFiltro)
+                where("categoria", "==", categoriaLimpa)
             );
         } else {
             qProd = query(collection(db, "produtos"), where("loja_id", "==", lojaSlug));
@@ -83,7 +92,7 @@ async function inicializarSaaS() {
         onSnapshot(qProd, (snap) => {
             grid.innerHTML = snap.empty ? 
                 `<div style="grid-column: 1/-1; text-align:center; padding: 50px; opacity: 0.5;">
-                    Nenhum produto encontrado nesta categoria.
+                    Nenhum produto encontrado em "${categoriaFiltro || 'Geral'}".
                 </div>` : '';
 
             snap.forEach(doc => {
