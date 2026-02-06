@@ -1,34 +1,20 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    onSnapshot, 
-    deleteDoc, 
-    doc, 
-    query, 
-    where, 
-    getDocs, 
-    updateDoc 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 1. CONFIGURAÇÃO FIREBASE
 const firebaseConfig = {
-  apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
-  authDomain: "aquiles-sw-saas.firebaseapp.com",
-  projectId: "aquiles-sw-saas",
-  storageBucket: "aquiles-sw-saas.appspot.com",
-  messagingSenderId: "878262536684",
-  appId: "1:878262536684:web:e32ac0b9755ca101e398c9"
+    apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
+    authDomain: "aquiles-sw-saas.firebaseapp.com",
+    projectId: "aquiles-sw-saas",
+    storageBucket: "aquiles-sw-saas.appspot.com",
+    messagingSenderId: "878262536684",
+    appId: "1:878262536684:web:e32ac0b9755ca101e398c9"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const IMGBB_API_KEY = "a4f3b254234cb475b12a0f303a1b30f7";
 
-// 2. CONFIGURAÇÃO IMGBB
-const IMGBB_API_KEY = "a4f3b254234cb475b12a0f303a1b30f7"; 
-
-// --- FUNÇÃO A: ATUALIZAR IDENTIDADE DA LOJA ---
+// SALVAR CONFIGURAÇÕES DA LOJA
 document.getElementById('btn-salvar-config').addEventListener('click', async () => {
     const btn = document.getElementById('btn-salvar-config');
     const arquivoLogo = document.getElementById('logo_loja').files[0];
@@ -41,46 +27,29 @@ document.getElementById('btn-salvar-config').addEventListener('click', async () 
 
     try {
         let urlLogoFinal = null;
-
-        // Se houver arquivo de logo, faz upload
         if (arquivoLogo) {
             const formData = new FormData();
             formData.append("image", arquivoLogo);
-            const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                method: "POST",
-                body: formData
-            });
+            const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
             const json = await resp.json();
             urlLogoFinal = json.data.url;
         }
 
-        // Busca o documento da loja para atualizar
         const q = query(collection(db, "config_lojas"), where("slug", "==", loja_slug));
         const snap = await getDocs(q);
 
         if (!snap.empty) {
             const lojaDocRef = doc(db, "config_lojas", snap.docs[0].id);
-            const novosDados = {
-                descricao: descricao,
-                cor_tema: cor
-            };
+            const novosDados = { descricao: descricao, cor_tema: cor };
             if (urlLogoFinal) novosDados.logo_url = urlLogoFinal;
-
             await updateDoc(lojaDocRef, novosDados);
-            alert("IDENTIDADE DA LOJA ATUALIZADA!");
-        } else {
-            alert("Erro: Loja não encontrada no banco.");
+            alert("LOJA ATUALIZADA!");
         }
-    } catch (e) {
-        console.error(e);
-        alert("Erro ao salvar: " + e.message);
-    } finally {
-        btn.innerText = "Atualizar Loja";
-        btn.disabled = false;
-    }
+    } catch (e) { alert("Erro: " + e.message); }
+    btn.innerText = "Atualizar Loja"; btn.disabled = false;
 });
 
-// --- FUNÇÃO B: CADASTRAR PRODUTO COM CATEGORIA ---
+// CADASTRAR PRODUTO
 document.getElementById('btn-cadastrar').addEventListener('click', async () => {
     const btn = document.getElementById('btn-cadastrar');
     const nome = document.getElementById('nome').value;
@@ -89,72 +58,41 @@ document.getElementById('btn-cadastrar').addEventListener('click', async () => {
     const arquivo = document.getElementById('arquivo_imagem').files[0];
     const loja_id = document.getElementById('loja_id').value;
 
-    if (!nome || !preco || !arquivo) {
-        alert("Preencha nome, preço e foto!");
-        return;
-    }
-
-    btn.innerText = "Publicando...";
-    btn.disabled = true;
+    if (!nome || !preco || !arquivo) return alert("Preencha tudo!");
+    btn.innerText = "Publicando..."; btn.disabled = true;
 
     try {
         const formData = new FormData();
         formData.append("image", arquivo);
-
-        const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-            method: "POST",
-            body: formData
-        });
+        const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
         const json = await resp.json();
-        const urlFinal = json.data.url;
-
+        
         await addDoc(collection(db, "produtos"), {
-            nome: nome,
-            preco: preco,
-            categoria: categoria,
-            url_imagem: urlFinal,
-            loja_id: loja_id,
-            data_criacao: new Date()
+            nome, preco, categoria, url_imagem: json.data.url, loja_id, data_criacao: new Date()
         });
-
         alert("PRODUTO PUBLICADO!");
-        
-        // Limpar campos
-        document.getElementById('nome').value = "";
-        document.getElementById('preco').value = "";
-        document.getElementById('arquivo_imagem').value = "";
-        
-    } catch (e) {
-        alert("Erro: " + e.message);
-    } finally {
-        btn.innerText = "Publicar no Catálogo";
-        btn.disabled = false;
-    }
+        document.getElementById('nome').value = ""; document.getElementById('preco').value = "";
+    } catch (e) { alert("Erro: " + e.message); }
+    btn.innerText = "Publicar no Catálogo"; btn.disabled = false;
 });
 
-// --- FUNÇÃO C: LISTAR E EXCLUIR PRODUTOS ---
-function carregarProdutosGestao() {
+// LISTAGEM EM TEMPO REAL
+let unsubscribe = null;
+function carregarProdutos() {
     const listaArea = document.getElementById('lista-produtos');
-    const lojaIdAtual = document.getElementById('loja_id').value;
+    const lojaId = document.getElementById('loja_id').value;
+    if (unsubscribe) unsubscribe();
 
-    const q = query(collection(db, "produtos"), where("loja_id", "==", lojaIdAtual));
-
-    onSnapshot(q, (querySnapshot) => {
-        listaArea.innerHTML = ""; 
-
-        querySnapshot.forEach((recurso) => {
+    const q = query(collection(db, "produtos"), where("loja_id", "==", lojaId));
+    unsubscribe = onSnapshot(q, (snap) => {
+        listaArea.innerHTML = "";
+        snap.forEach((recurso) => {
             const item = recurso.data();
-            const id = recurso.id;
-
             const div = document.createElement('div');
             div.className = "produto-item";
-            div.style = "display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding:10px 0;";
             div.innerHTML = `
-                <div class="info-prod">
-                    <span class="nome-prod">${item.nome}</span>
-                    <span class="preco-prod">R$ ${item.preco} | ${item.categoria || 'Geral'}</span>
-                </div>
-                <button class="btn-excluir" onclick="removerProduto('${id}')">Excluir</button>
+                <div><strong>${item.nome}</strong><br><small>${item.categoria}</small></div>
+                <button class="btn-excluir" onclick="removerProduto('${recurso.id}')">Excluir</button>
             `;
             listaArea.appendChild(div);
         });
@@ -162,55 +100,8 @@ function carregarProdutosGestao() {
 }
 
 window.removerProduto = async (id) => {
-    if (confirm("Deseja excluir este produto?")) {
-        try {
-            await deleteDoc(doc(db, "produtos", id));
-        } catch (e) {
-            alert("Erro: " + e.message);
-        }
-    }
+    if (confirm("Excluir?")) await deleteDoc(doc(db, "produtos", id));
 };
-// Variável para armazenar a função de "escuta" atual e podermos desligar a anterior
-let unsubscribeProdutos = null;
 
-function carregarProdutosGestao() {
-    const listaArea = document.getElementById('lista-produtos');
-    const lojaIdAtual = document.getElementById('loja_id').value;
-
-    // Se já houver uma escuta ativa de outra loja, desliga ela antes de começar a nova
-    if (unsubscribeProdutos) unsubscribeProdutos();
-
-    const q = query(collection(db, "produtos"), where("loja_id", "==", lojaIdAtual));
-
-    unsubscribeProdutos = onSnapshot(q, (querySnapshot) => {
-        listaArea.innerHTML = ""; 
-
-        if (querySnapshot.empty) {
-            listaArea.innerHTML = "<p style='text-align:center; color:#999;'>Nenhum produto encontrado para este ID.</p>";
-            return;
-        }
-
-        querySnapshot.forEach((recurso) => {
-            const item = recurso.data();
-            const id = recurso.id;
-
-            const div = document.createElement('div');
-            div.className = "produto-item";
-            div.style = "display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding:10px 0;";
-            div.innerHTML = `
-                <div class="info-prod">
-                    <span class="nome-prod">${item.nome}</span>
-                    <span class="preco-prod">R$ ${item.preco} | ${item.categoria || 'Geral'}</span>
-                </div>
-                <button class="btn-excluir" onclick="removerProduto('${id}')">Excluir</button>
-            `;
-            listaArea.appendChild(div);
-        });
-    });
-}
-
-// FAZ A MÁGICA: Sempre que o usuário mudar o ID da loja, a lista atualiza na hora
-document.getElementById('loja_id').addEventListener('change', carregarProdutosGestao);
-
-// Inicia a primeira carga
-carregarProdutosGestao();
+document.getElementById('loja_id').addEventListener('change', carregarProdutos);
+carregarProdutos();
