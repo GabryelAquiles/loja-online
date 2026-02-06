@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// 1. CONFIGURAÇÃO FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
     authDomain: "aquiles-sw-saas.firebaseapp.com",
@@ -11,27 +12,30 @@ const firebaseConfig = {
     appId: "1:878262536684:web:e32ac0b9755ca101e398c9"
 };
 
-// Inicialização
+// Inicialização dos serviços
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const IMGBB_API_KEY = "a4f3b254234cb475b12a0f303a1b30f7";
 
-// --- SEGURANÇA: VERIFICA SE ESTÁ LOGADO ---
+// --- SEGURANÇA: CONTROLE DE ACESSO ---
 onAuthStateChanged(auth, (user) => {
     if (!user) {
+        // Se não estiver logado, redireciona para o login
         window.location.href = "login.html";
     }
 });
 
-// FUNÇÃO DE LOGOUT
+// Função Global de Logout
 window.fazerLogout = () => {
     signOut(auth).then(() => {
         window.location.href = "login.html";
+    }).catch((error) => {
+        alert("Erro ao sair: " + error.message);
     });
 };
 
-// SALVAR CONFIGURAÇÕES DA LOJA
+// --- FUNÇÃO A: ATUALIZAR IDENTIDADE DA LOJA ---
 document.getElementById('btn-salvar-config').addEventListener('click', async () => {
     const btn = document.getElementById('btn-salvar-config');
     const arquivoLogo = document.getElementById('logo_loja').files[0];
@@ -39,36 +43,53 @@ document.getElementById('btn-salvar-config').addEventListener('click', async () 
     const cor = document.getElementById('cor_tema').value;
     const loja_slug = document.getElementById('loja_id').value;
 
+    if (!loja_slug) return alert("Por favor, informe o ID da Loja (Slug).");
+
     btn.innerText = "Salvando...";
     btn.disabled = true;
 
     try {
         let urlLogoFinal = null;
+
+        // Upload da Logo (opcional)
         if (arquivoLogo) {
             const formData = new FormData();
             formData.append("image", arquivoLogo);
-            const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+            const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: "POST",
+                body: formData
+            });
             const json = await resp.json();
             urlLogoFinal = json.data.url;
         }
 
+        // Busca e atualiza o documento da loja
         const q = query(collection(db, "config_lojas"), where("slug", "==", loja_slug));
         const snap = await getDocs(q);
 
         if (!snap.empty) {
             const lojaDocRef = doc(db, "config_lojas", snap.docs[0].id);
-            const novosDados = { descricao: descricao, cor_tema: cor };
+            const novosDados = { 
+                descricao: descricao, 
+                cor_tema: cor 
+            };
             if (urlLogoFinal) novosDados.logo_url = urlLogoFinal;
+
             await updateDoc(lojaDocRef, novosDados);
-            alert("LOJA ATUALIZADA!");
+            alert("IDENTIDADE DA LOJA ATUALIZADA COM SUCESSO!");
         } else {
-            alert("Loja não encontrada. Verifique o ID (Slug).");
+            alert("Erro: Loja não encontrada no banco. Verifique o ID digitado.");
         }
-    } catch (e) { alert("Erro: " + e.message); }
-    btn.innerText = "Atualizar Loja"; btn.disabled = false;
+    } catch (e) {
+        console.error(e);
+        alert("Erro ao salvar: " + e.message);
+    } finally {
+        btn.innerText = "Atualizar Loja";
+        btn.disabled = false;
+    }
 });
 
-// CADASTRAR PRODUTO
+// --- FUNÇÃO B: CADASTRAR PRODUTO ---
 document.getElementById('btn-cadastrar').addEventListener('click', async () => {
     const btn = document.getElementById('btn-cadastrar');
     const nome = document.getElementById('nome').value;
@@ -77,52 +98,109 @@ document.getElementById('btn-cadastrar').addEventListener('click', async () => {
     const arquivo = document.getElementById('arquivo_imagem').files[0];
     const loja_id = document.getElementById('loja_id').value;
 
-    if (!nome || !preco || !arquivo) return alert("Preencha tudo!");
-    btn.innerText = "Publicando..."; btn.disabled = true;
+    if (!nome || !preco || !arquivo || !loja_id) {
+        alert("Preencha todos os campos do produto e o ID da loja!");
+        return;
+    }
+
+    btn.innerText = "Publicando...";
+    btn.disabled = true;
 
     try {
         const formData = new FormData();
         formData.append("image", arquivo);
-        const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-        const json = await resp.json();
-        
-        await addDoc(collection(db, "produtos"), {
-            nome, preco, categoria, url_imagem: json.data.url, loja_id, data_criacao: new Date()
+
+        const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
         });
-        alert("PRODUTO PUBLICADO!");
-        document.getElementById('nome').value = ""; document.getElementById('preco').value = "";
-    } catch (e) { alert("Erro: " + e.message); }
-    btn.innerText = "Publicar no Catálogo"; btn.disabled = false;
+        const json = await resp.json();
+        const urlFinal = json.data.url;
+
+        await addDoc(collection(db, "produtos"), {
+            nome: nome,
+            preco: preco,
+            categoria: categoria,
+            url_imagem: urlFinal,
+            loja_id: loja_id,
+            data_criacao: new Date()
+        });
+
+        alert("PRODUTO PUBLICADO NO CATÁLOGO!");
+        
+        // Limpa campos
+        document.getElementById('nome').value = "";
+        document.getElementById('preco').value = "";
+        document.getElementById('arquivo_imagem').value = "";
+        
+    } catch (e) {
+        alert("Erro ao publicar: " + e.message);
+    } finally {
+        btn.innerText = "Publicar no Catálogo";
+        btn.disabled = false;
+    }
 });
 
-// LISTAGEM EM TEMPO REAL
-let unsubscribe = null;
-function carregarProdutos() {
-    const listaArea = document.getElementById('lista-produtos');
-    const lojaId = document.getElementById('loja_id').value;
-    if (unsubscribe) unsubscribe();
+// --- FUNÇÃO C: GESTÃO DE PRODUTOS EM TEMPO REAL ---
+let unsubscribeProdutos = null;
 
-    const q = query(collection(db, "produtos"), where("loja_id", "==", lojaId));
-    unsubscribe = onSnapshot(q, (snap) => {
-        listaArea.innerHTML = "";
-        snap.forEach((recurso) => {
+function carregarProdutosGestao() {
+    const listaArea = document.getElementById('lista-produtos');
+    const lojaIdAtual = document.getElementById('loja_id').value;
+
+    if (!lojaIdAtual) {
+        listaArea.innerHTML = "<p style='text-align:center; color:#999;'>Digite o ID da loja para carregar os itens.</p>";
+        return;
+    }
+
+    // Se já houver um monitoramento ativo, desliga antes de iniciar o novo
+    if (unsubscribeProdutos) unsubscribeProdutos();
+
+    const q = query(collection(db, "produtos"), where("loja_id", "==", lojaIdAtual));
+
+    unsubscribeProdutos = onSnapshot(q, (querySnapshot) => {
+        listaArea.innerHTML = ""; 
+
+        if (querySnapshot.empty) {
+            listaArea.innerHTML = "<p style='text-align:center; color:#999;'>Nenhum produto cadastrado neste ID.</p>";
+            return;
+        }
+
+        querySnapshot.forEach((recurso) => {
             const item = recurso.data();
+            const id = recurso.id;
+
             const div = document.createElement('div');
             div.className = "produto-item";
+            div.style = "display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding:15px 0;";
             div.innerHTML = `
-                <div style="margin-bottom:10px; border-bottom:1px solid #eee; padding:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div><strong>${item.nome}</strong><br><small>${item.categoria}</small></div>
-                    <button class="btn-excluir" onclick="removerProduto('${recurso.id}')">Excluir</button>
+                <div class="info-prod">
+                    <span style="display:block; font-weight:bold;">${item.nome}</span>
+                    <span style="font-size:0.8rem; color:#666;">R$ ${item.preco} | ${item.categoria}</span>
                 </div>
+                <button class="btn-excluir" onclick="removerProduto('${id}')" 
+                    style="background:#ff4d4d; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">
+                    Excluir
+                </button>
             `;
             listaArea.appendChild(div);
         });
     });
 }
 
+// Tornar a função de remoção global para o botão funcionar
 window.removerProduto = async (id) => {
-    if (confirm("Excluir?")) await deleteDoc(doc(db, "produtos", id));
+    if (confirm("Deseja realmente excluir este produto?")) {
+        try {
+            await deleteDoc(doc(db, "produtos", id));
+        } catch (e) {
+            alert("Erro ao excluir: " + e.message);
+        }
+    }
 };
 
-document.getElementById('loja_id').addEventListener('change', carregarProdutos);
-carregarProdutos();
+// Monitora mudança no ID da loja para atualizar a lista automaticamente
+document.getElementById('loja_id').addEventListener('input', carregarProdutosGestao);
+
+// Inicializa a lista no carregamento
+carregarProdutosGestao();
