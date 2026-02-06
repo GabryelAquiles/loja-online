@@ -18,16 +18,25 @@
         .produto-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
         .btn-excluir { background-color: #ff4d4d; width: auto; padding: 8px 15px; font-size: 0.8rem; }
         .secao-titulo { color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
+        
+        /* Estilos para o Menu Interativo */
+        #lista-links-admin div { background: #f9f9f9; border: 1px solid #eee; padding: 10px; border-radius: 6px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+        .btn-logout { background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d; width: auto; padding: 5px 15px; margin-bottom: 20px; font-size: 0.8rem; }
+        .btn-logout:hover { background: #ff4d4d; color: white; }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <div style="text-align: right;">
+            <button class="btn-logout" onclick="fazerLogout()">SAIR DO SISTEMA</button>
+        </div>
+
         <div class="box">
             <span class="secao-titulo">Acesso ao Painel</span>
             <h2>🔑 Identificação da Loja</h2>
             <label>ID da sua Loja (Slug)</label>
-            <input type="text" id="loja_id" value="" placeholder="Ex: minha-loja">
+            <input type="text" id="loja_id" value="loja-verde" placeholder="Ex: minha-loja">
         </div>
 
         <div class="box">
@@ -39,16 +48,19 @@
             <input type="text" id="desc_loja" placeholder="Ex: Streetwear autêntico">
             <label>Cor do Tema</label>
             <input type="color" id="cor_tema" value="#000000">
-            <button id="btn-salvar-config" style="background-color: #28a745;">Atualizar Loja</button>
-        </div>
-            <div class="config-secao">
-            <h3>Menus do Cabeçalho</h3>
+            
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+            
+            <span class="secao-titulo">Navegação</span>
+            <h3>🔗 Menus do Cabeçalho</h3>
             <div id="lista-links-admin"></div>
             <div style="display: flex; gap: 5px; margin-top: 10px;">
-            <input type="text" id="menu_texto" placeholder="Ex: Camisetas">
-            <input type="text" id="menu_url" placeholder="Ex: ?cat=camisetas">
-            <button type="button" onclick="adicionarLinkMenu()" style="width: auto;">+</button>
+                <input type="text" id="menu_texto" placeholder="Ex: Camisetas" style="margin-bottom:0">
+                <input type="text" id="menu_url" placeholder="Ex: ?cat=camisetas" style="margin-bottom:0">
+                <button type="button" onclick="adicionarLinkMenu()" style="width: 50px; background: #28a745;">+</button>
             </div>
+            
+            <button id="btn-salvar-config" style="background-color: #28a745; margin-top: 20px;">Atualizar Loja e Menus</button>
         </div>
 
         <div class="box">
@@ -71,6 +83,7 @@
         </div>
 
         <div class="box">
+            <span class="secao-titulo">Exposição</span>
             <h2>🛒 Gerenciar Produtos</h2>
             <div id="lista-produtos"></div>
         </div>
@@ -79,5 +92,3 @@
     <script type="module" src="admin.js"></script>
 </body>
 </html>
-
-
