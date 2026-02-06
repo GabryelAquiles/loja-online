@@ -13,7 +13,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Função para abrir o WhatsApp
+// Função global para o WhatsApp
 window.sendWa = function(nome, preco) {
     const telefone = window.lojaTelefone || "5511999999999";
     const msg = encodeURIComponent(`Olá! Gostaria de adquirir o item: ${nome} (R$ ${preco})`);
@@ -25,17 +25,17 @@ async function inicializarSaaS() {
     const menuList = document.getElementById('menu-list');
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Parâmetros da URL
+    // Captura os parâmetros da URL
     const lojaSlug = urlParams.get('loja') || 'loja-verde';
     let categoriaFiltro = urlParams.get('cat');
 
     try {
-        // 1. CARREGA CONFIGURAÇÕES DA LOJA
+        // 1. BUSCAR CONFIGURAÇÕES DA LOJA
         const qLoja = query(collection(db, "config_lojas"), where("slug", "==", lojaSlug));
         const lojaSnap = await getDocs(qLoja);
 
         if (lojaSnap.empty) {
-            document.getElementById('store-name').innerText = "Loja não encontrada";
+            document.getElementById('store-name').innerText = "LOJA NÃO ENCONTRADA";
             return;
         }
 
@@ -43,6 +43,7 @@ async function inicializarSaaS() {
             const d = doc.data();
             window.lojaTelefone = d.whatsapp;
 
+            // Atualiza Identidade Visual
             document.getElementById('store-name').innerText = d.nome_loja || d.slug.toUpperCase();
             document.getElementById('store-description').innerText = d.descricao || "";
             
@@ -54,19 +55,19 @@ async function inicializarSaaS() {
                 logo.style.display = 'block';
             }
 
-            // Gera o Menu Interativo Corrigido
+            // 2. GERAR MENU DINÂMICO (CORRIGIDO)
             if (d.links_cabecalho && d.links_cabecalho.length > 0) {
                 menuList.innerHTML = d.links_cabecalho.map(link => {
                     let urlDestino = link.url;
                     
-                    // Se o lojista escreveu apenas "Camisetas", transformamos em link de filtro
+                    // Se for apenas o nome da categoria, monta o link técnico
                     if (!urlDestino.startsWith('?') && !urlDestino.startsWith('http')) {
                         urlDestino = `?cat=${urlDestino}`;
                     }
 
-                    // Monta o link final preservando o slug da loja
+                    // Gera o HREF final mantendo o parâmetro da loja (crucial para o SaaS)
                     const hrefFinal = urlDestino.startsWith('?cat=') 
-                        ? `?loja=${lojaSlug}${urlDestino.replace('?', '&')}` 
+                        ? `?loja=${lojaSlug}&${urlDestino.replace('?', '')}` 
                         : urlDestino;
 
                     return `<li><a href="${hrefFinal}">${link.texto}</a></li>`;
@@ -74,32 +75,38 @@ async function inicializarSaaS() {
             }
         });
 
-        // 2. CARREGA PRODUTOS (COM OU SEM FILTRO)
+        // 3. CARREGAR PRODUTOS COM FILTRO EM TEMPO REAL
         let qProd;
         if (categoriaFiltro) {
-            // decodeURIComponent limpa espaços e caracteres da URL para comparar com o banco
-            const categoriaLimpa = decodeURIComponent(categoriaFiltro);
-            
+            // Filtra por Loja E Categoria
             qProd = query(
                 collection(db, "produtos"), 
                 where("loja_id", "==", lojaSlug),
-                where("categoria", "==", categoriaLimpa)
+                where("categoria", "==", decodeURIComponent(categoriaFiltro))
             );
         } else {
+            // Filtra apenas por Loja (Mostra tudo)
             qProd = query(collection(db, "produtos"), where("loja_id", "==", lojaSlug));
         }
 
         onSnapshot(qProd, (snap) => {
-            grid.innerHTML = snap.empty ? 
-                `<div style="grid-column: 1/-1; text-align:center; padding: 50px; opacity: 0.5;">
-                    Nenhum produto encontrado em "${categoriaFiltro || 'Geral'}".
-                </div>` : '';
+            grid.innerHTML = "";
+            
+            if (snap.empty) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align:center; padding: 50px; opacity: 0.5;">
+                        <p>NENHUM PRODUTO EM "${categoriaFiltro || 'GERAL'}"</p>
+                    </div>`;
+                return;
+            }
 
             snap.forEach(doc => {
                 const p = doc.data();
                 grid.innerHTML += `
                     <div class="product-card">
-                        <div class="image-container"><img src="${p.url_imagem}" alt="${p.nome}"></div>
+                        <div class="image-container">
+                            <img src="${p.url_imagem}" alt="${p.nome}" loading="lazy">
+                        </div>
                         <div class="product-info">
                             <h2>${p.nome}</h2>
                             <p class="price">R$ ${p.preco}</p>
@@ -112,7 +119,7 @@ async function inicializarSaaS() {
         });
 
     } catch (e) {
-        console.error("Erro Crítico:", e);
+        console.error("Erro na inicialização:", e);
     }
 }
 
