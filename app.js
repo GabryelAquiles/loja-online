@@ -13,9 +13,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Função para abrir o WhatsApp
 window.sendWa = function(nome, preco) {
     const telefone = window.lojaTelefone || "5511999999999";
-    const msg = encodeURIComponent(`Olá! Quero o item: ${nome} (R$ ${preco})`);
+    const msg = encodeURIComponent(`Olá! Gostaria de adquirir o item: ${nome} (R$ ${preco})`);
     window.open(`https://wa.me/${telefone}?text=${msg}`);
 }
 
@@ -23,56 +24,87 @@ async function inicializarSaaS() {
     const grid = document.getElementById('product-grid');
     const menuList = document.getElementById('menu-list');
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // Parâmetros da URL
     const lojaSlug = urlParams.get('loja') || 'loja-verde';
+    const categoriaFiltro = urlParams.get('cat');
 
     try {
-        // 1. CARREGA CONFIG DA LOJA (CABEÇALHO E MENUS)
+        // 1. CARREGA CONFIGURAÇÕES DA LOJA
         const qLoja = query(collection(db, "config_lojas"), where("slug", "==", lojaSlug));
         const lojaSnap = await getDocs(qLoja);
 
+        if (lojaSnap.empty) {
+            document.getElementById('store-name').innerText = "Loja não encontrada";
+            return;
+        }
+
         lojaSnap.forEach(doc => {
             const d = doc.data();
+            window.lojaTelefone = d.whatsapp;
+
+            // Preenche Cabeçalho
+            document.getElementById('store-name').innerText = d.nome_loja || d.slug.toUpperCase();
+            document.getElementById('store-description').innerText = d.descricao || "";
             
-            // Nome e Bio
-            if(d.nome_loja) document.getElementById('store-name').innerText = d.nome_lo_ja || d.slug.toUpperCase();
-            if(d.descricao) document.getElementById('store-description').innerText = d.descricao;
-            
-            // Cor e Logo
             if(d.cor_tema) document.documentElement.style.setProperty('--cor-primaria', d.cor_tema);
+            
             if(d.logo_url) {
                 const logo = document.getElementById('store-logo');
-                logo.src = d.logo_url; logo.style.display = 'block';
-            }
-            
-            // MENUS INTERATIVOS (AQUI ESTÁ A CORREÇÃO)
-            if (d.links_cabecalho && d.links_cabecalho.length > 0) {
-                menuList.innerHTML = d.links_cabecalho.map(link => `
-                    <li><a href="${link.url}">${link.texto}</a></li>
-                `).join('');
+                logo.src = d.logo_url;
+                logo.style.display = 'block';
             }
 
-            window.lojaTelefone = d.whatsapp;
+            // Gera o Menu Interativo
+            if (d.links_cabecalho && d.links_cabecalho.length > 0) {
+                menuList.innerHTML = d.links_cabecalho.map(link => {
+                    // Mantém o slug da loja ao clicar nas categorias
+                    let hrefFinal = link.url;
+                    if (link.url.startsWith('?cat=')) {
+                        hrefFinal = `?loja=${lojaSlug}${link.url.replace('?', '&')}`;
+                    }
+                    return `<li><a href="${hrefFinal}">${link.texto}</a></li>`;
+                }).join('');
+            }
         });
 
-        // 2. CARREGA PRODUTOS (VITRINE)
-        const qProd = query(collection(db, "produtos"), where("loja_id", "==", lojaSlug));
+        // 2. CARREGA PRODUTOS (COM OU SEM FILTRO)
+        let qProd;
+        if (categoriaFiltro) {
+            qProd = query(
+                collection(db, "produtos"), 
+                where("loja_id", "==", lojaSlug),
+                where("categoria", "==", categoriaFiltro)
+            );
+        } else {
+            qProd = query(collection(db, "produtos"), where("loja_id", "==", lojaSlug));
+        }
+
         onSnapshot(qProd, (snap) => {
-            grid.innerHTML = snap.empty ? '<p>Sem produtos disponíveis nesta categoria.</p>' : '';
+            grid.innerHTML = snap.empty ? 
+                `<div style="grid-column: 1/-1; text-align:center; padding: 50px; opacity: 0.5;">
+                    Nenhum produto encontrado nesta categoria.
+                </div>` : '';
+
             snap.forEach(doc => {
                 const p = doc.data();
                 grid.innerHTML += `
                     <div class="product-card">
-                        <div class="image-container"><img src="${p.url_imagem}"></div>
+                        <div class="image-container"><img src="${p.url_imagem}" alt="${p.nome}"></div>
                         <div class="product-info">
                             <h2>${p.nome}</h2>
                             <p class="price">R$ ${p.preco}</p>
-                            <button class="btn-wa" onclick="sendWa('${p.nome}', '${p.preco}')">ADQUIRIR VIA WHATSAPP</button>
+                            <button class="btn-wa" onclick="sendWa('${p.nome}', '${p.preco}')">
+                                ADQUIRIR VIA WHATSAPP
+                            </button>
                         </div>
                     </div>`;
             });
         });
 
-    } catch (e) { console.error("Erro ao carregar loja:", e); }
+    } catch (e) {
+        console.error("Erro Crítico:", e);
+    }
 }
 
 inicializarSaaS();
