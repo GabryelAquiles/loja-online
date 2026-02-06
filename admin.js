@@ -14,174 +14,130 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const IMGBB_API_KEY = "a4f3b254234cb475b12a0f303a1b30f7";
+const IMGBB_KEY = "a4f3b254234cb475b12a0f303a1b30f7";
 
-let linksTemporarios = []; 
+let linksTemporarios = [];
 
-// --- SEGURANÇA ---
-onAuthStateChanged(auth, (user) => {
-    if (!user) window.location.href = "login.html";
-});
+onAuthStateChanged(auth, (user) => { if (!user) window.location.href = "login.html"; });
+window.fazerLogout = () => signOut(auth).then(() => window.location.href = "login.html");
 
-window.fazerLogout = () => {
-    signOut(auth).then(() => window.location.href = "login.html");
-};
-
-// --- FUNÇÃO PARA GERENCIAR MENUS (AUTOMATIZADA) ---
+// --- GESTÃO DE MENU ---
 window.adicionarLinkMenu = () => {
     const texto = document.getElementById('menu_texto').value;
     let url = document.getElementById('menu_url').value;
-
     if(texto && url) {
-        // Se o lojista digitar apenas "Camisetas", o código transforma em "?cat=Camisetas"
-        if (!url.startsWith('?') && !url.startsWith('http')) {
-            url = `?cat=${url}`;
-        }
-
+        // AUTOMAÇÃO: Se não tiver HTTP ou ?, vira ?cat= automaticamente
+        if (!url.startsWith('?') && !url.startsWith('http')) url = `?cat=${url}`;
         linksTemporarios.push({ texto, url });
         renderizarLinksAdmin();
         document.getElementById('menu_texto').value = "";
         document.getElementById('menu_url').value = "";
-    } else {
-        alert("Preencha o nome do menu e a categoria!");
     }
 };
 
 function renderizarLinksAdmin() {
     const div = document.getElementById('lista-links-admin');
-    div.innerHTML = linksTemporarios.map((link, index) => `
-        <div style="font-size: 0.8rem; background: #eee; padding: 8px; margin-bottom: 5px; display: flex; justify-content: space-between; border-radius:4px; align-items:center;">
-            <span><strong>${link.texto}</strong> <small>(${link.url})</small></span> 
-            <button onclick="removerLinkMenu(${index})" style="background:red; color:white; border:none; padding:2px 8px; border-radius:4px; cursor:pointer; width:auto;">X</button>
+    div.innerHTML = linksTemporarios.map((l, i) => `
+        <div class="item-row">
+            <span>${l.texto} (${l.url})</span>
+            <button class="btn-del" onclick="removerLinkMenu(${i})">X</button>
         </div>
     `).join('');
 }
+window.removerLinkMenu = (i) => { linksTemporarios.splice(i, 1); renderizarLinksAdmin(); };
 
-window.removerLinkMenu = (index) => {
-    linksTemporarios.splice(index, 1);
-    renderizarLinksAdmin();
-};
-
-// --- SALVAR CONFIGURAÇÕES ---
+// --- SALVAR ---
 document.getElementById('btn-salvar-config').addEventListener('click', async () => {
     const btn = document.getElementById('btn-salvar-config');
-    const arquivoLogo = document.getElementById('logo_loja').files[0];
-    const descricao = document.getElementById('desc_loja').value;
-    const cor = document.getElementById('cor_tema').value;
-    const loja_slug = document.getElementById('loja_id').value;
+    const slug = document.getElementById('loja_id').value;
+    if (!slug) return alert("ID da Loja obrigatório!");
 
-    if (!loja_slug) return alert("Informe o ID da Loja!");
-
-    btn.innerText = "Salvando...";
+    btn.innerText = "SINCRONIZANDO...";
     btn.disabled = true;
 
     try {
-        let urlLogoFinal = null;
-        if (arquivoLogo) {
-            const formData = new FormData();
-            formData.append("image", arquivoLogo);
-            const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-            const json = await resp.json();
-            urlLogoFinal = json.data.url;
+        const logoFile = document.getElementById('logo_loja').files[0];
+        let logoUrl = null;
+        if (logoFile) {
+            const fd = new FormData(); fd.append("image", logoFile);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
+            const j = await res.json(); logoUrl = j.data.url;
         }
 
-        const q = query(collection(db, "config_lojas"), where("slug", "==", loja_slug));
+        const q = query(collection(db, "config_lojas"), where("slug", "==", slug));
         const snap = await getDocs(q);
-
         if (!snap.empty) {
-            const lojaDocRef = doc(db, "config_lojas", snap.docs[0].id);
-            
-            const novosDados = { 
-                descricao: descricao, 
-                cor_tema: cor,
-                links_cabecalho: linksTemporarios 
+            const dados = {
+                descricao: document.getElementById('desc_loja').value,
+                cor_tema: document.getElementById('cor_tema').value,
+                links_cabecalho: linksTemporarios
             };
-            
-            if (urlLogoFinal) novosDados.logo_url = urlLogoFinal;
-
-            await updateDoc(lojaDocRef, novosDados);
-            alert("CONFIGURAÇÕES SALVAS COM SUCESSO!");
-        } else {
-            alert("Loja não encontrada. Verifique o ID (Slug).");
+            if (logoUrl) dados.logo_url = logoUrl;
+            await updateDoc(doc(db, "config_lojas", snap.docs[0].id), dados);
+            alert("AQUILESSW: DADOS ATUALIZADOS.");
         }
-    } catch (e) { 
-        alert("Erro ao salvar: " + e.message); 
-    } finally {
-        btn.innerText = "Atualizar Loja"; 
-        btn.disabled = false;
-    }
+    } catch (e) { alert("Erro: " + e.message); }
+    btn.innerText = "Sincronizar Loja"; btn.disabled = false;
 });
 
-// --- CARREGAR DADOS EXISTENTES AO TROCAR O ID ---
-async function carregarDadosLoja() {
-    const loja_slug = document.getElementById('loja_id').value;
-    const listaArea = document.getElementById('lista-produtos');
-    
-    if(!loja_slug) {
-        linksTemporarios = [];
-        renderizarLinksAdmin();
-        return;
-    }
+// --- PRODUTOS ---
+document.getElementById('btn-cadastrar').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-cadastrar');
+    const nome = document.getElementById('nome').value;
+    const preco = document.getElementById('preco').value;
+    const cat = document.getElementById('categoria_prod').value;
+    const file = document.getElementById('arquivo_imagem').files[0];
+    const slug = document.getElementById('loja_id').value;
 
-    const q = query(collection(db, "config_lojas"), where("slug", "==", loja_slug));
+    if (!nome || !file || !slug) return alert("Dados insuficientes!");
+    btn.innerText = "UPLOADING..."; btn.disabled = true;
+
+    try {
+        const fd = new FormData(); fd.append("image", file);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
+        const j = await res.json();
+        await addDoc(collection(db, "produtos"), {
+            nome, preco, categoria: cat, url_imagem: j.data.url, loja_id: slug, data_criacao: new Date()
+        });
+        alert("PRODUTO PUBLICADO.");
+        document.getElementById('nome').value = ""; document.getElementById('preco').value = "";
+    } catch (e) { alert("Erro: " + e.message); }
+    btn.innerText = "Publicar Produto"; btn.disabled = false;
+});
+
+// --- CARREGAMENTO ---
+async function carregarTudo() {
+    const slug = document.getElementById('loja_id').value;
+    if(!slug) return;
+    const q = query(collection(db, "config_lojas"), where("slug", "==", slug));
     const snap = await getDocs(q);
-    
     if(!snap.empty) {
         const d = snap.docs[0].data();
         document.getElementById('desc_loja').value = d.descricao || "";
         document.getElementById('cor_tema').value = d.cor_tema || "#000000";
         linksTemporarios = d.links_cabecalho || [];
         renderizarLinksAdmin();
-    } else {
-        linksTemporarios = [];
-        renderizarLinksAdmin();
     }
-    carregarProdutosGestao();
+    carregarProdutosLista();
 }
 
-document.getElementById('loja_id').addEventListener('change', carregarDadosLoja);
-
-// --- GESTÃO DE PRODUTOS ---
-document.getElementById('btn-cadastrar').addEventListener('click', async () => {
-    const btn = document.getElementById('btn-cadastrar');
-    const nome = document.getElementById('nome').value;
-    const preco = document.getElementById('preco').value;
-    const categoria = document.getElementById('categoria').value;
-    const arquivo = document.getElementById('arquivo_imagem').files[0];
-    const loja_id = document.getElementById('loja_id').value;
-
-    if (!nome || !preco || !arquivo || !loja_id) return alert("Preencha todos os campos!");
-    
-    btn.innerText = "Publicando..."; 
-    btn.disabled = true;
-
-    try {
-        const formData = new FormData();
-        formData.append("image", arquivo);
-        const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-        const json = await resp.json();
-        
-        await addDoc(collection(db, "produtos"), {
-            nome, 
-            preco, 
-            categoria, 
-            url_imagem: json.data.url, 
-            loja_id, 
-            data_criacao: new Date()
+function carregarProdutosLista() {
+    const slug = document.getElementById('loja_id').value;
+    const q = query(collection(db, "produtos"), where("loja_id", "==", slug));
+    onSnapshot(q, (s) => {
+        const area = document.getElementById('lista-produtos');
+        area.innerHTML = "";
+        s.forEach(d => {
+            const p = d.data();
+            area.innerHTML += `
+                <div class="item-row">
+                    <span>${p.nome} - R$ ${p.preco}</span>
+                    <button class="btn-del" onclick="removerProd('${d.id}')">EXCLUIR</button>
+                </div>
+            `;
         });
-        
-        alert("PRODUTO CADASTRADO!");
-        document.getElementById('nome').value = ""; 
-        document.getElementById('preco').value = "";
-    } catch (e) { 
-        alert("Erro: " + e.message); 
-    } finally {
-        btn.innerText = "Publicar no Catálogo"; 
-        btn.disabled = false;
-    }
-});
-
-let unsubscribeProdutos = null;
-function carregarProdutosGestao() {
-    const listaArea = document.getElementById('lista-produtos');
-    const lojaId
+    });
+}
+window.removerProd = async (id) => { if(confirm("Remover?")) await deleteDoc(doc(db, "produtos", id)); };
+document.getElementById('loja_id').addEventListener('change', carregarTudo);
+carregarTudo();
