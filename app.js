@@ -21,30 +21,43 @@ window.sendWa = function(nome, preco) {
 
 async function inicializarSaaS() {
     const grid = document.getElementById('product-grid');
+    const menuList = document.getElementById('menu-list');
     const urlParams = new URLSearchParams(window.location.search);
     const lojaSlug = urlParams.get('loja') || 'loja-verde';
 
     try {
-        // 1. CARREGA CONFIG DA LOJA (CABEÇALHO)
+        // 1. CARREGA CONFIG DA LOJA (CABEÇALHO E MENUS)
         const qLoja = query(collection(db, "config_lojas"), where("slug", "==", lojaSlug));
         const lojaSnap = await getDocs(qLoja);
 
         lojaSnap.forEach(doc => {
             const d = doc.data();
-            if(d.nome_loja) document.getElementById('store-name').innerText = d.nome_loja;
+            
+            // Nome e Bio
+            if(d.nome_loja) document.getElementById('store-name').innerText = d.nome_lo_ja || d.slug.toUpperCase();
             if(d.descricao) document.getElementById('store-description').innerText = d.descricao;
+            
+            // Cor e Logo
             if(d.cor_tema) document.documentElement.style.setProperty('--cor-primaria', d.cor_tema);
             if(d.logo_url) {
                 const logo = document.getElementById('store-logo');
                 logo.src = d.logo_url; logo.style.display = 'block';
             }
+            
+            // MENUS INTERATIVOS (AQUI ESTÁ A CORREÇÃO)
+            if (d.links_cabecalho && d.links_cabecalho.length > 0) {
+                menuList.innerHTML = d.links_cabecalho.map(link => `
+                    <li><a href="${link.url}">${link.texto}</a></li>
+                `).join('');
+            }
+
             window.lojaTelefone = d.whatsapp;
         });
 
         // 2. CARREGA PRODUTOS (VITRINE)
         const qProd = query(collection(db, "produtos"), where("loja_id", "==", lojaSlug));
         onSnapshot(qProd, (snap) => {
-            grid.innerHTML = snap.empty ? '<p>Sem produtos.</p>' : '';
+            grid.innerHTML = snap.empty ? '<p>Sem produtos disponíveis nesta categoria.</p>' : '';
             snap.forEach(doc => {
                 const p = doc.data();
                 grid.innerHTML += `
@@ -58,16 +71,8 @@ async function inicializarSaaS() {
                     </div>`;
             });
         });
-    } catch (e) { console.error(e); }
-}
-// Exemplo de como deve estar no seu app.js
-if (d.links_cabecalho && d.links_cabecalho.length > 0) {
-    const menuList = document.getElementById('menu-list');
-    menuList.innerHTML = d.links_cabecalho.map(link => `
-        <li><a href="${link.url}">${link.texto}</a></li>
-    `).join('');
-}
 
+    } catch (e) { console.error("Erro ao carregar loja:", e); }
+}
 
 inicializarSaaS();
-
