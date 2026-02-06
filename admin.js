@@ -170,5 +170,47 @@ window.removerProduto = async (id) => {
         }
     }
 };
+// Variável para armazenar a função de "escuta" atual e podermos desligar a anterior
+let unsubscribeProdutos = null;
 
+function carregarProdutosGestao() {
+    const listaArea = document.getElementById('lista-produtos');
+    const lojaIdAtual = document.getElementById('loja_id').value;
+
+    // Se já houver uma escuta ativa de outra loja, desliga ela antes de começar a nova
+    if (unsubscribeProdutos) unsubscribeProdutos();
+
+    const q = query(collection(db, "produtos"), where("loja_id", "==", lojaIdAtual));
+
+    unsubscribeProdutos = onSnapshot(q, (querySnapshot) => {
+        listaArea.innerHTML = ""; 
+
+        if (querySnapshot.empty) {
+            listaArea.innerHTML = "<p style='text-align:center; color:#999;'>Nenhum produto encontrado para este ID.</p>";
+            return;
+        }
+
+        querySnapshot.forEach((recurso) => {
+            const item = recurso.data();
+            const id = recurso.id;
+
+            const div = document.createElement('div');
+            div.className = "produto-item";
+            div.style = "display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding:10px 0;";
+            div.innerHTML = `
+                <div class="info-prod">
+                    <span class="nome-prod">${item.nome}</span>
+                    <span class="preco-prod">R$ ${item.preco} | ${item.categoria || 'Geral'}</span>
+                </div>
+                <button class="btn-excluir" onclick="removerProduto('${id}')">Excluir</button>
+            `;
+            listaArea.appendChild(div);
+        });
+    });
+}
+
+// FAZ A MÁGICA: Sempre que o usuário mudar o ID da loja, a lista atualiza na hora
+document.getElementById('loja_id').addEventListener('change', carregarProdutosGestao);
+
+// Inicia a primeira carga
 carregarProdutosGestao();
