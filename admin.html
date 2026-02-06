@@ -5,59 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Administrativo - Aquiles SW</title>
     <style>
-        /* Estilo rápido para deixar o painel limpo */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 600px; margin: auto; }
         .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { margin-top: 0; font-size: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        h2 { margin-top: 0; font-size: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #000; }
         label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.9rem; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
         button { width: 100%; padding: 12px; background-color: #000; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
         button:hover { background-color: #333; }
         button:disabled { background-color: #ccc; cursor: not-allowed; }
         
-        /* Estilo da lista de produtos */
+        /* Estilo para o seletor de cor */
+        input[type="color"] { height: 50px; padding: 5px; cursor: pointer; }
+
+        /* Lista de produtos */
         .produto-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
-        .produto-item:last-child { border-bottom: none; }
-        .info-prod { display: flex; flex-direction: column; }
-        .nome-prod { font-weight: bold; }
-        .preco-prod { color: #666; font-size: 0.9rem; }
         .btn-excluir { background-color: #ff4d4d; width: auto; padding: 8px 15px; font-size: 0.8rem; }
         .btn-excluir:hover { background-color: #cc0000; }
-        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+        
+        .secao-titulo { color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
     </style>
 </head>
 <body>
 
     <div class="container">
+        
         <div class="box">
-            <h2>📦 Cadastrar Produto</h2>
+            <span class="secao-titulo">Personalização</span>
+            <h2>🎨 Identidade da Loja</h2>
+            
+            <label>Logo da Loja</label>
+            <input type="file" id="logo_loja" accept="image/*">
+            
+            <label>Descrição / Bio (Aparece no topo)</label>
+            <input type="text" id="desc_loja" placeholder="Ex: Streetwear autêntico de SP">
+            
+            <label>Cor do Tema (Botões e Títulos)</label>
+            <input type="color" id="cor_tema" value="#000000">
+            
+            <button id="btn-salvar-config" style="background-color: #28a745;">Atualizar Loja</button>
+        </div>
+
+        <div class="box">
+            <span class="secao-titulo">Inventário</span>
+            <h2>📦 Novo Produto</h2>
             
             <label>Nome do Produto</label>
-            <input type="text" id="nome" placeholder="Ex: Camiseta Oversized Preta">
+            <input type="text" id="nome" placeholder="Ex: Camiseta Oversized">
             
             <label>Preço (R$)</label>
-            <input type="text" id="preco" placeholder="Ex: 149.90">
+            <input type="text" id="preco" placeholder="Ex: 129.90">
+
+            <label>Categoria</label>
+            <select id="categoria">
+                <option value="Camisetas">Camisetas</option>
+                <option value="Moletons">Moletons</option>
+                <option value="Calças">Calças</option>
+                <option value="Acessórios">Acessórios</option>
+            </select>
             
             <label>Foto do Produto</label>
             <input type="file" id="arquivo_imagem" accept="image/*">
             
-            <label>ID da Loja</label>
-            <input type="text" id="loja_id" value="loja-verde">
+            <input type="hidden" id="loja_id" value="loja-verde">
             
-            <button id="btn-cadastrar">Publicar Produto</button>
+            <button id="btn-cadastrar">Publicar no Catálogo</button>
         </div>
 
         <div class="box">
-            <h2>🛒 Gerenciar Estoque</h2>
+            <h2>🛒 Gerenciar Produtos</h2>
             <div id="lista-produtos">
-                <p style="text-align: center; color: #999;">Carregando produtos...</p>
+                <p style="text-align: center; color: #999;">Carregando...</p>
             </div>
         </div>
+        
     </div>
 
     <script type="module" src="admin.js"></script>
 
 </body>
 </html>
-
