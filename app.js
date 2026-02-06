@@ -66,7 +66,6 @@ async function inicializarSaaS() {
                         <div class="product-card">
                             <div class="image-container">
                                 <img src="${item.url_imagem || 'https://via.placeholder.com/400'}" alt="${item.nome}">
-                                <span class="badge">DROP</span>
                             </div>
                             <div class="product-info">
                                 <h2>${item.nome}</h2>
@@ -89,4 +88,5 @@ async function inicializarSaaS() {
 
 inicializarSaaS();
 inicializarSaaS();
+
 
