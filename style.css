@@ -6,6 +6,9 @@
     --cor-whatsapp: #25D366; 
     --font: 'Inter', sans-serif;
     --border: #1a1a1a;
+    /* Variáveis dinâmicas que o JS vai controlar */
+    --header-bg: #050505;
+    --header-text: #ffffff;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,27 +17,26 @@ body {
     background-color: var(--bg);
     color: var(--text);
     font-family: var(--font);
-    padding: 0 20px 40px;
+    padding: 0 0 40px; /* Removi padding lateral aqui para o header ocupar tudo se quiser */
     -webkit-font-smoothing: antialiased;
 }
 
-/* --- HEADER --- */
+/* --- HEADER DINÂMICO --- */
 header {
     text-align: center;
-    padding: 60px 0 40px;
+    padding: 60px 20px 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: var(--header-bg, #050505); /* Fundo padrão caso falhe */
-    color: var(--header-text, #ffffff); /* Texto padrão */
-    transition: 0.3s;
-}
+    background-color: var(--header-bg); 
+    color: var(--header-text); 
+    transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 header h1 { 
     font-weight: 900; 
     font-size: 3.5rem; 
-    color: var(--cor-primaria);
+    color: inherit; /* Segue a cor definida pelo contraste no JS */
     text-transform: uppercase;
     letter-spacing: -3px;
     line-height: 1;
@@ -44,7 +46,6 @@ header h1 {
     max-width: 120px;
     margin-bottom: 20px;
     display: none;
-    filter: brightness(1);
 }
 
 #store-description {
@@ -52,14 +53,15 @@ header h1 {
     letter-spacing: 4px;
     text-transform: uppercase;
     margin-top: 15px;
-    color: #666;
+    color: inherit;
+    opacity: 0.8; /* Suaviza levemente a descrição */
 }
 
-/* --- NAVEGAÇÃO / CATEGORIAS --- */
+/* --- NAVEGAÇÃO --- */
 #main-nav {
     margin-top: 40px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     width: 100%;
     max-width: 1200px;
 }
@@ -75,16 +77,17 @@ header h1 {
 
 #menu-list a {
     text-decoration: none;
-    color: #888;
+    color: inherit; /* Links também seguem o contraste do cabeçalho */
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 2px;
     font-weight: 700;
+    opacity: 0.7;
     transition: 0.3s;
 }
 
 #menu-list a:hover {
-    color: #fff;
+    opacity: 1;
 }
 
 /* --- GRID DE PRODUTOS --- */
@@ -94,6 +97,7 @@ header h1 {
     gap: 30px;
     max-width: 1200px;
     margin: 40px auto;
+    padding: 0 20px;
 }
 
 .product-card {
@@ -110,7 +114,7 @@ header h1 {
 
 .image-container {
     background-color: #000;
-    aspect-ratio: 1/1; /* Quadrado para Streetwear */
+    aspect-ratio: 1/1;
     overflow: hidden;
     position: relative;
 }
@@ -122,34 +126,21 @@ header h1 {
     transition: 0.5s ease;
 }
 
-.product-card:hover .image-container img {
-    transform: scale(1.05);
-}
-
-/* --- INFORMAÇÕES DO PRODUTO --- */
-.product-info {
-    padding: 15px 5px;
-}
+/* --- INFORMAÇÕES E BOTÃO --- */
+.product-info { padding: 15px 5px; }
 
 .product-info h2 {
     font-size: 0.9rem;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
     margin-bottom: 5px;
 }
 
-.price { 
-    color: #888; 
-    margin-bottom: 20px; 
-    font-size: 1rem;
-    font-weight: 400;
-}
+.price { color: #888; margin-bottom: 20px; font-size: 1rem; }
 
-/* --- BOTÃO WHATSAPP --- */
 .btn-wa {
     width: 100%;
-    background: #fff; /* Invertido para o tema dark */
+    background: #fff;
     color: #000;
     border: none;
     padding: 18px;
@@ -157,7 +148,6 @@ header h1 {
     font-size: 0.75rem;
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 1px;
     transition: 0.3s;
 }
 
@@ -174,16 +164,15 @@ footer {
     margin-top: 80px;
 }
 
-footer p {
-    font-size: 0.6rem;
-    letter-spacing: 3px;
-    color: #444;
-}
+footer p { font-size: 0.6rem; letter-spacing: 3px; color: #444; }
 
 /* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {
     header h1 { font-size: 2.2rem; }
-    #product-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+    #product-grid { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 15px; 
+        padding: 0 10px;
+    }
     .btn-wa { padding: 12px; font-size: 0.65rem; }
 }
-
