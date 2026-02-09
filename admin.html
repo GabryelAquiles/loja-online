@@ -22,13 +22,33 @@
         .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
         .btn-del { background: #ff4d4d; color: #fff; width: auto; padding: 4px 10px; font-size: 0.7rem; border: none; cursor: pointer; }
         #lista-links-admin { margin-bottom: 15px; }
+        .footer-admin {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.7rem;
+            color: #555;
+        }
+        .footer-admin a {
+            color: #888;
+            text-decoration: none;
+        }
+        .footer-admin a:hover {
+            color: #fff;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+
         <header>
             <h1>AQUILESSW // SYSTEM v1.0</h1>
-            <button onclick="fazerLogout()" style="width:auto; padding: 5px 15px; font-size: 0.7rem;" class="btn-secondary">LOGOUT</button>
+
+            <!-- BOTÃO CORRIGIDO (SEM onclick) -->
+            <button id="btn-logout"
+                class="btn-secondary"
+                style="width:auto; padding: 5px 15px; font-size: 0.7rem;">
+                LOGOUT
+            </button>
         </header>
 
         <div class="box">
@@ -56,16 +76,21 @@
             
             <span class="label-tech">Navegação da Vitrine (Menus)</span>
             <div id="lista-links-admin"></div>
+
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="menu_texto" placeholder="TEXTO (Ex: Moletons)" style="margin:0">
                 <input type="text" id="menu_url" placeholder="CATEGORIA (Ex: moletons)" style="margin:0">
                 <button onclick="adicionarLinkMenu()" style="width:60px; background: #222; color: #fff;">+</button>
             </div>
-            <button id="btn-salvar-config" style="margin-top: 20px;">ATUALIZAR IDENTIDADE DA LOJA</button>
+
+            <button id="btn-salvar-config" style="margin-top: 20px;">
+                ATUALIZAR IDENTIDADE DA LOJA
+            </button>
         </div>
 
         <div class="box">
             <span class="label-tech">Inventory Management (Produtos)</span>
+
             <label class="label-tech">Nome do Produto</label>
             <input type="text" id="nome" placeholder="NOME DO ITEM">
             
@@ -78,13 +103,23 @@
             <label class="label-tech">Imagem do Produto</label>
             <input type="file" id="arquivo_imagem">
             
-            <button id="btn-cadastrar" class="btn-secondary">PUBLICAR NO CATÁLOGO</button>
+            <button id="btn-cadastrar" class="btn-secondary">
+                PUBLICAR NO CATÁLOGO
+            </button>
         </div>
 
         <div class="box">
             <span class="label-tech">Active Inventory</span>
             <div id="lista-produtos"></div>
         </div>
+
+        <div class="footer-admin">
+            Criado por 
+            <a href="https://www.aquilessw.com.br" target="_blank">
+                Aquiles Softwares
+            </a>
+        </div>
+
     </div>
 
     <script type="module" src="admin.js"></script>
