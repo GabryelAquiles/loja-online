@@ -137,3 +137,17 @@ if (!lojaSlug) {
 
 inicializarSaaS();
 
+const hexcor = d.cor_tema; // Cor que vem do seu Firebase
+document.documentElement.style.setProperty('--header-bg', hexcor);
+
+// Truque de mágica: Calcula o contraste
+const r = parseInt(hexcor.slice(1, 3), 16);
+const g = parseInt(hexcor.slice(3, 5), 16);
+const b = parseInt(hexcor.slice(5, 7), 16);
+const luminosidade = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+// Se a cor for clara, texto preto. Se for escura, texto branco.
+const corTexto = luminosidade > 0.5 ? '#000000' : '#ffffff';
+document.documentElement.style.setProperty('--header-text', corTexto);
+
+
