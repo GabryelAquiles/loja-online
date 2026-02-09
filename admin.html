@@ -2,45 +2,119 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>AQUILESSW — Painel Administrativo</title>
-<link rel="stylesheet" href="admin.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AQUILESSW | ADMIN</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root { --bg:#000; --card:#0a0a0a; --border:#222; }
+
+body{
+background:#000;
+color:#fff;
+font-family:'Inter',sans-serif;
+margin:0;
+}
+
+.container{
+max-width:900px;
+margin:30px auto;
+padding:20px;
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid var(--border);
+padding-bottom:20px;
+margin-bottom:30px;
+}
+
+.box{
+background:var(--card);
+border:1px solid var(--border);
+padding:25px;
+margin-bottom:20px;
+}
+
+.label-tech{
+font-size:0.65rem;
+color:#777;
+text-transform:uppercase;
+letter-spacing:1px;
+display:block;
+margin-bottom:8px;
+}
+
+input,select{
+width:100%;
+background:#000;
+border:1px solid var(--border);
+color:#fff;
+padding:12px;
+margin-bottom:15px;
+}
+
+button{
+width:100%;
+padding:15px;
+background:#fff;
+color:#000;
+border:none;
+font-weight:900;
+cursor:pointer;
+}
+
+.btn-secondary{
+background:#111;
+color:#fff;
+border:1px solid var(--border);
+}
+
+.item-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px;
+border-bottom:1px solid var(--border);
+font-size:0.8rem;
+}
+
+.btn-del{
+background:#ff4d4d;
+color:#fff;
+padding:4px 10px;
+border:none;
+}
+
+footer{
+text-align:center;
+margin-top:40px;
+font-size:0.8rem;
+opacity:0.7;
+}
+</style>
 </head>
+
 <body>
 
-<header class="admin-header">
-  <h1>AQUILESSW — Painel de Administração</h1>
+<div class="container">
+
+<header>
+<h1>AQUILESSW // ADMIN</h1>
+<button onclick="fazerLogout()" class="btn-secondary" style="width:auto">LOGOUT</button>
 </header>
 
-<main class="admin-container">
+<!-- IDENTIDADE DA LOJA -->
+<div class="box">
+<span class="label-tech">IDENTIDADE DA LOJA</span>
 
-<section class="card">
-  <h2>Identidade da Loja</h2>
-  <label>Nome da Loja</label>
-  <input id="storeName" placeholder="Ex: Minha Loja">
-  <button onclick="saveStore()">Salvar Identidade</button>
-</section>
+<label>ID DA LOJA (slug)</label>
+<input id="loja_id" placeholder="ex: minha-loja">
 
-<section class="card">
-  <h2>Menu de Navegação</h2>
-  <input id="menuItem" placeholder="Novo item do menu">
-  <button onclick="addMenu()">Adicionar ao Menu</button>
-  <ul id="menuList"></ul>
-</section>
+<label>NOME DA LOJA</label>
+<input id="nome_loja">
 
-<section class="card">
-  <h2>Catálogo de Produtos</h2>
-  <input id="prodName" placeholder="Nome do produto">
-  <input id="prodPrice" placeholder="Preço">
-  <button onclick="addProduct()">Adicionar Produto</button>
-  <ul id="productList"></ul>
-</section>
-
-</main>
-
-<footer class="admin-footer">
-  Criado por <a href="https://www.aquilessw.com.br" target="_blank">Aquiles Softwares</a>
-</footer>
-
-<script src="admin.js"></script>
-</body>
-</html>
+<label>WHATSAPP (apenas números)</lab
