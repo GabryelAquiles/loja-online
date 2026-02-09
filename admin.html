@@ -1,92 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AQUILESSW | ADMIN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg: #000; --card: #0a0a0a; --border: #222; --accent: #fff; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; padding: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
-        h1 { font-weight: 900; letter-spacing: -1px; font-size: 1.2rem; }
-        .box { background: var(--card); border: 1px solid var(--border); padding: 25px; margin-bottom: 20px; }
-        .label-tech { font-size: 0.65rem; color: #555; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; display: block; margin-bottom: 8px; }
-        input, select, textarea { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; margin-bottom: 15px; outline: none; font-family: inherit; }
-        input:focus { border-color: #555; }
-        button { width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #bbb; }
-        .btn-secondary { background: #111; color: #fff; border: 1px solid var(--border); }
-        .btn-secondary:hover { background: #222; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
-        .btn-del { background: #ff4d4d; color: #fff; width: auto; padding: 4px 10px; font-size: 0.7rem; border: none; cursor: pointer; }
-        #lista-links-admin { margin-bottom: 15px; }
-    </style>
+<meta charset="UTF-8">
+<title>AQUILESSW — Painel Administrativo</title>
+<link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>AQUILESSW // SYSTEM v1.0</h1>
-            <button onclick="fazerLogout()" style="width:auto; padding: 5px 15px; font-size: 0.7rem;" class="btn-secondary">LOGOUT</button>
-        </header>
 
-        <div class="box">
-            <span class="label-tech">Core Config</span>
-            
-            <label class="label-tech">ID da Loja (Slug da URL)</label>
-            <input type="text" id="loja_id" placeholder="ex: minha-loja-street">
-            
-            <label class="label-tech">Nome Exibido da Loja</label>
-            <input type="text" id="nome_loja" placeholder="Ex: Aquiles Streetwear">
+<header class="admin-header">
+  <h1>AQUILESSW — Painel de Administração</h1>
+</header>
 
-            <label class="label-tech">WhatsApp de Vendas (Apenas números com DDD)</label>
-            <input type="text" id="whatsapp_loja" placeholder="Ex: 5511999999999">
-            
-            <label class="label-tech">Logo da Marca (Transparente recomendada)</label>
-            <input type="file" id="logo_loja">
-            
-            <label class="label-tech">Bio / Slogan da Marca</label>
-            <input type="text" id="desc_loja" placeholder="Ex: O futuro do estilo urbano.">
-            
-            <label class="label-tech">Cor de Destaque (Tema)</label>
-            <input type="color" id="cor_tema" value="#ffffff" style="height: 40px; padding: 2px; cursor: pointer;">
+<main class="admin-container">
 
-            <hr style="border:0; border-top:1px solid #222; margin: 20px 0;">
-            
-            <span class="label-tech">Navegação da Vitrine (Menus)</span>
-            <div id="lista-links-admin"></div>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="menu_texto" placeholder="TEXTO (Ex: Moletons)" style="margin:0">
-                <input type="text" id="menu_url" placeholder="CATEGORIA (Ex: moletons)" style="margin:0">
-                <button onclick="adicionarLinkMenu()" style="width:60px; background: #222; color: #fff;">+</button>
-            </div>
-            <button id="btn-salvar-config" style="margin-top: 20px;">ATUALIZAR IDENTIDADE DA LOJA</button>
-        </div>
+<section class="card">
+  <h2>Identidade da Loja</h2>
+  <label>Nome da Loja</label>
+  <input id="storeName" placeholder="Ex: Minha Loja">
+  <button onclick="saveStore()">Salvar Identidade</button>
+</section>
 
-        <div class="box">
-            <span class="label-tech">Inventory Management (Produtos)</span>
-            <label class="label-tech">Nome do Produto</label>
-            <input type="text" id="nome" placeholder="NOME DO ITEM">
-            
-            <label class="label-tech">Preço de Venda</label>
-            <input type="text" id="preco" placeholder="99.90">
-            
-            <label class="label-tech">Categoria (Deve ser igual ao Menu acima)</label>
-            <input type="text" id="categoria_prod" placeholder="Ex: moletons">
-            
-            <label class="label-tech">Imagem do Produto</label>
-            <input type="file" id="arquivo_imagem">
-            
-            <button id="btn-cadastrar" class="btn-secondary">PUBLICAR NO CATÁLOGO</button>
-        </div>
+<section class="card">
+  <h2>Menu de Navegação</h2>
+  <input id="menuItem" placeholder="Novo item do menu">
+  <button onclick="addMenu()">Adicionar ao Menu</button>
+  <ul id="menuList"></ul>
+</section>
 
-        <div class="box">
-            <span class="label-tech">Active Inventory</span>
-            <div id="lista-produtos"></div>
-        </div>
-    </div>
+<section class="card">
+  <h2>Catálogo de Produtos</h2>
+  <input id="prodName" placeholder="Nome do produto">
+  <input id="prodPrice" placeholder="Preço">
+  <button onclick="addProduct()">Adicionar Produto</button>
+  <ul id="productList"></ul>
+</section>
 
-    <script type="module" src="admin.js"></script>
+</main>
+
+<footer class="admin-footer">
+  Criado por <a href="https://www.aquilessw.com.br" target="_blank">Aquiles Softwares</a>
+</footer>
+
+<script src="admin.js"></script>
 </body>
 </html>
