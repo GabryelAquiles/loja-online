@@ -25,9 +25,21 @@ async function inicializarSaaS() {
     const menuList = document.getElementById('menu-list');
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Captura os parâmetros da URL
-    const lojaSlug = urlParams.get('loja') || 'loja-verde';
-    let categoriaFiltro = urlParams.get('cat');
+// Captura os parâmetros da URL
+const lojaSlug = urlParams.get('loja'); // Removemos o 'loja-verde' fixo
+let categoriaFiltro = urlParams.get('cat');
+
+// VERIFICAÇÃO: Se não houver loja na URL, para o código e avisa o usuário
+if (!lojaSlug) {
+    document.getElementById('store-name').innerText = "AQUILESSW | VITRINE";
+    document.getElementById('store-description').innerText = "Aguardando identificação da loja...";
+    grid.innerHTML = `
+        <div style="text-align:center; padding: 50px; opacity: 0.7;">
+            <p>Nenhuma loja foi detectada neste link.</p>
+            <small>Tente acessar: ${window.location.origin}/?loja=NOME-DA-LOJA</small>
+        </div>`;
+    return; // Impede que o Firebase tente buscar algo vazio
+}
 
     try {
         // 1. BUSCAR CONFIGURAÇÕES DA LOJA
@@ -124,3 +136,4 @@ async function inicializarSaaS() {
 }
 
 inicializarSaaS();
+
