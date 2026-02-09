@@ -117,4 +117,62 @@ opacity:0.7;
 <label>NOME DA LOJA</label>
 <input id="nome_loja">
 
-<label>WHATSAPP (apenas números)</lab
+<label>WHATSAPP (apenas números)</label>
+<input id="whatsapp_loja">
+
+<label>LOGO DA LOJA</label>
+<input type="file" id="logo_loja">
+
+<label>DESCRIÇÃO / SLOGAN</label>
+<input id="desc_loja">
+
+<label>COR DO TEMA</label>
+<input type="color" id="cor_tema" value="#ffffff">
+
+<hr>
+
+<span class="label-tech">MENU DA VITRINE</span>
+<div id="lista-links-admin"></div>
+
+<div style="display:flex;gap:10px;">
+<input id="menu_texto" placeholder="Ex: Moletons">
+<input id="menu_url" placeholder="Ex: moletons">
+<button onclick="adicionarLinkMenu()" style="width:60px">+</button>
+</div>
+
+<button id="btn-salvar-config" style="margin-top:20px;">
+SALVAR CONFIGURAÇÕES
+</button>
+</div>
+
+<!-- PRODUTOS -->
+<div class="box">
+<span class="label-tech">CATÁLOGO</span>
+
+<input id="nome" placeholder="Nome do produto">
+<input id="preco" placeholder="99.90">
+<input id="categoria_prod" placeholder="Categoria">
+<input type="file" id="arquivo_imagem">
+
+<button id="btn-cadastrar" class="btn-secondary">
+PUBLICAR PRODUTO
+</button>
+</div>
+
+<!-- LISTA -->
+<div class="box">
+<span class="label-tech">PRODUTOS ATIVOS</span>
+<div id="lista-produtos"></div>
+</div>
+
+<footer>
+Criado por <a href="https://www.aquilessw.com.br" target="_blank" style="color:#fff;">
+Aquiles Softwares
+</a>
+</footer>
+
+</div>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
