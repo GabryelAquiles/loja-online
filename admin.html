@@ -2,46 +2,50 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AQUILESSW | ADMIN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #f9f9f9; color: #000; font-family: 'Inter', sans-serif; padding: 40px 20px; }
-        .container { max-width: 800px; margin: auto; }
-        .box { background: #fff; border: 1px solid #eee; padding: 30px; margin-bottom: 20px; border-radius: 8px; }
-        h1 { font-weight: 900; font-size: 1.2rem; margin-bottom: 30px; text-transform: uppercase; }
-        .label { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #aaa; display: block; margin-bottom: 8px; }
-        input, textarea { width: 100%; padding: 15px; border: 1px solid #eee; background: #fafafa; margin-bottom: 20px; outline: none; }
-        button { width: 100%; padding: 18px; background: #000; color: #fff; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        :root { --bg: #f9f9f9; --card: #ffffff; --border: #eee; }
+        body { background: var(--bg); color: #000; font-family: 'Inter', sans-serif; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .box { background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; }
+        .label { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; color: #aaa; margin-bottom: 5px; display: block; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #eee; border-radius: 6px; outline: none; }
+        button { width: 100%; padding: 15px; background: #000; color: #fff; border: none; font-weight: 900; cursor: pointer; border-radius: 6px; }
         .btn-sec { background: #eee; color: #000; margin-top: 10px; }
-        .prod-item { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .prod-item { display: flex; align-items: center; gap: 15px; padding: 10px; border-bottom: 1px solid #eee; }
         .prod-item img { width: 50px; height: 50px; object-fit: cover; }
+        .full { grid-column: 1 / -1; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Admin Control</h1>
-        <div class="box">
-            <span class="label">Configuração da Loja</span>
-            <input type="text" id="loja_id" placeholder="SLUG DA LOJA (ex: loja-verde)">
-            <input type="text" id="nome_loja" placeholder="NOME DA MARCA">
-            <input type="text" id="whatsapp_loja" placeholder="WHATSAPP (55...)">
-            <textarea id="desc_loja" placeholder="DESCRIÇÃO DA LOJA"></textarea>
-            <button id="btn-salvar-config">ATUALIZAR LOJA</button>
-        </div>
-
-        <div class="box">
-            <span class="label">Novo Produto</span>
-            <input type="text" id="nome" placeholder="NOME DO ITEM">
-            <input type="text" id="preco" placeholder="PREÇO">
-            <input type="text" id="categoria_prod" placeholder="CATEGORIA">
-            <input type="file" id="arquivo_imagem">
-            <button id="btn-cadastrar" class="btn-sec">PUBLICAR PRODUTO</button>
-        </div>
-
-        <div class="box">
-            <span class="label">Inventário</span>
-            <div id="lista-produtos"></div>
+        <header><h1>Admin Painel</h1><button id="btn-logout" class="btn-sec" style="width:auto">Sair</button></header>
+        <div class="grid">
+            <div class="box">
+                <span class="label">Config da Loja</span>
+                <input type="text" id="loja_id" placeholder="DIGITE O SLUG E SAIA DO CAMPO">
+                <input type="text" id="nome_loja" placeholder="NOME DA LOJA">
+                <input type="text" id="whatsapp_loja" placeholder="WHATSAPP">
+                <textarea id="desc_loja" placeholder="DESCRIÇÃO"></textarea>
+                <span class="label">Cor de Destaque</span>
+                <input type="color" id="cor_tema" style="height: 50px; padding: 5px;">
+                <button id="btn-salvar-config">Salvar Config</button>
+            </div>
+            <div class="box">
+                <span class="label">Novo Produto</span>
+                <input type="text" id="nome" placeholder="NOME">
+                <input type="text" id="preco" placeholder="PREÇO">
+                <input type="text" id="categoria_prod" placeholder="CATEGORIA">
+                <input type="file" id="arquivo_imagem" multiple>
+                <button id="btn-cadastrar" class="btn-sec">Publicar</button>
+            </div>
+            <div class="box full">
+                <span class="label">Produtos</span>
+                <div id="lista-produtos"></div>
+            </div>
         </div>
     </div>
     <script type="module" src="admin.js"></script>
