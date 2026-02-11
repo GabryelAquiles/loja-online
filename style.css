@@ -1,165 +1,176 @@
 :root {
     --bg: #ffffff;
     --text: #000000;
-    --accent: #fcfcfc;
-    --cor-primaria: #000000;
-    --cor-whatsapp: #25D366;
-    --font: 'Inter', sans-serif;
     --border: #eeeeee;
-    
-    --header-bg: #ffffff;
-    --header-text: #000000;
+    --font: 'Inter', sans-serif;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+
+/* Suaviza o scroll no iPhone */
+html { scroll-behavior: smooth; }
 
 body {
     background-color: var(--bg);
     color: var(--text);
     font-family: var(--font);
-    padding-bottom: 40px;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
 }
 
-/* --- HEADER --- */
+/* --- HEADER & NAV --- */
 header {
     text-align: center;
-    padding: 60px 20px 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: var(--header-bg); 
-    color: var(--header-text); 
+    padding: 60px 20px 20px;
+    background: #fff;
     border-bottom: 1px solid var(--border);
-    position: relative;
-    z-index: 10; /* Garante que o header fique sobre o grid */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 header h1 { 
     font-weight: 900; 
-    font-size: clamp(2rem, 10vw, 4rem);
-    text-transform: uppercase;
-    letter-spacing: -2px;
-    line-height: 0.9;
-    margin-bottom: 10px;
+    font-size: clamp(2.2rem, 8vw, 4rem); 
+    text-transform: uppercase; 
+    letter-spacing: -3px; 
+    line-height: 0.85;
 }
 
-#store-description {
-    font-size: 0.65rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    opacity: 0.6;
-    max-width: 80%;
+#store-description { 
+    font-size: 0.6rem; 
+    letter-spacing: 4px; 
+    text-transform: uppercase; 
+    opacity: 0.4; 
+    margin-top: 10px; 
+    font-weight: 700;
 }
 
-/* --- GRID DE PRODUTOS --- */
+/* CONTAINER DA NAV - MELHORIA UX MOBILE */
+#main-nav { 
+    margin-top: 30px; 
+    display: flex;
+    justify-content: center;
+}
+
+#menu-list { 
+    display: flex; 
+    list-style: none; 
+    gap: 25px; 
+    padding: 8px 20px;
+    background: #fcfcfc;
+    border-radius: 50px; 
+    border: 1px solid var(--border);
+    overflow-x: auto; /* Permite scroll lateral no celular */
+    max-width: 90vw;
+    white-space: nowrap; /* Impede quebra de linha */
+    scrollbar-width: none; /* Esconde scroll no Firefox */
+}
+
+#menu-list::-webkit-scrollbar { display: none; } /* Esconde scroll no Chrome/Safari */
+
+#menu-list li a { 
+    text-decoration: none; 
+    color: #000; 
+    font-size: 0.7rem; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    padding: 5px 2px;
+    opacity: 0.4;
+    transition: 0.3s;
+}
+
+#menu-list li a.active {
+    opacity: 1;
+    border-bottom: 2px solid #000;
+}
+
+/* --- GRID --- */
 #product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
+    padding: 30px 5%;
     max-width: 1400px;
-    margin: 30px auto;
-    padding: 0 15px;
+    margin: 0 auto;
 }
 
-.product-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    transition: 0.3s;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
+.product-card { 
+    cursor: pointer; 
+    border: 1px solid var(--border); 
+    transition: transform 0.2s; 
 }
 
-/* Unificado com o wrapper do app.js para evitar erro de imagem solta */
-.product-image-wrapper, .image-container {
-    background-color: #f9f9f9;
-    aspect-ratio: 1/1.2;
-    overflow: hidden;
-    width: 100%;
+.product-card:active { transform: scale(0.98); } /* Feedback de toque no celular */
+
+.product-image-wrapper { 
+    aspect-ratio: 1/1.2; 
+    overflow: hidden; 
+    background: #f9f9f9; 
 }
 
-.product-image-wrapper img, .image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.product-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-.product-info { 
-    padding: 20px 15px;
-    text-align: center;
-}
+.product-info { padding: 15px; text-align: center; }
+.product-info h2 { font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; font-weight: 800; }
+.price { font-weight: 900; font-size: 0.9rem; }
 
-.product-info h2 {
-    font-size: 0.85rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-}
-
-.price { 
-    font-weight: 900;
-    color: #000; 
-    margin-bottom: 15px; 
-    font-size: 0.9rem; 
-}
-
-/* --- MODAL DE DETALHES --- */
+/* --- MODAL (UX MOBILE TOTAL) --- */
 #product-detail-view {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
+    position: fixed; 
+    top: 0; left: 0; 
     width: 100%; height: 100%;
-    background: #ffffff; /* Fundo sólido para evitar transparência */
-    z-index: 9999;
+    background: #ffffff; 
+    z-index: 2000; 
+    display: none; 
     overflow-y: auto;
 }
 
-.detail-container {
-    max-width: 500px;
-    margin: 40px auto;
-    background: #fff;
-    border: 1px solid var(--border);
-    position: relative;
-    padding-bottom: 30px;
+.close-detail { 
+    position: fixed; 
+    top: 15px; right: 15px; 
+    background: #000; 
+    color: #fff; 
+    padding: 12px 20px; 
+    cursor: pointer; 
+    font-weight: 900; 
+    font-size: 0.7rem;
+    z-index: 2001;
+    border-radius: 5px;
 }
 
-.close-detail {
-    position: fixed;
-    top: 20px; right: 20px;
+.detail-container { 
+    max-width: 1100px; 
+    margin: 0 auto; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 30px; 
+    padding: 20px; 
+}
+
+.product-data { padding: 20px 0; }
+.product-data h1 { font-size: 2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 15px; }
+.price-detail { font-size: 1.5rem; font-weight: 900; margin-bottom: 20px; display: block; }
+.description { color: #666; line-height: 1.6; margin-bottom: 30px; font-size: 0.95rem; }
+
+.btn-whatsapp {
+    width: 100%;
+    padding: 20px;
     background: #000;
     color: #fff;
-    padding: 12px 25px;
+    border: none;
     font-weight: 900;
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     cursor: pointer;
-    z-index: 10001;
-    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.carousel {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    background: #f9f9f9;
-}
-
-.carousel img {
-    width: 100%;
-    flex-shrink: 0;
-    scroll-snap-align: start;
-    object-fit: cover;
-}
-
-/* --- RESPONSIVIDADE CELULAR --- */
+/* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {
-    header { padding: 40px 15px 20px; }
-    #product-grid { 
-        grid-template-columns: 1fr 1fr;
-        gap: 10px; 
-        padding: 0 10px;
-    }
-    .detail-container { margin: 0; max-width: 100%; border: none; }
-    .close-detail { top: 10px; right: 10px; }
+    header { padding: 40px 10px 15px; }
+    #product-grid { grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px 10px; }
+    .detail-container { grid-template-columns: 1fr; padding-top: 60px; }
+    .product-data h1 { font-size: 1.5rem; }
+    .close-detail { padding: 10px 15px; top: 10px; right: 10px; }
 }
