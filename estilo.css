@@ -1,41 +1,57 @@
 :root {
     --bg: #ffffff;
     --text: #000000;
+    --border: #eeeeee;
+    --font: 'Inter', sans-serif;
 }
 
-/* --- HEADER FIX --- */
-header {
-    width: 100%;
-    padding: 60px 20px;
-    text-align: center;
-    background-color: var(--bg);
-    position: relative; /* Necessário para o z-index funcionar */
-    z-index: 10; 
-    border-bottom: 1px solid #eee;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--bg) !important;
+    color: var(--text);
+    font-family: var(--font);
+    overflow-x: hidden;
 }
 
-header h1 {
-    font-size: 3rem;
-    font-weight: 900;
+/* --- CABEÇALHO (HEADER) --- */
+#header-loja {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 60px 20px !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid var(--border) !important;
+    position: relative !important;
+    z-index: 100 !important;
+    visibility: visible !important;
+}
+
+#store-name {
+    font-weight: 900 !important;
+    font-size: 3rem !important;
+    color: #000000 !important;
     text-transform: uppercase;
+    margin-bottom: 10px;
 }
 
-/* --- GRID E CARDS --- */
+/* --- VITRINE --- */
 #product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    padding: 20px;
+    padding: 40px 5%;
+    z-index: 10;
 }
 
-.product-card { cursor: pointer; }
+.product-card { cursor: pointer; text-align: center; }
 
-/* IMPORTANTE: Esta classe deve bater com o JS */
 .product-image-wrapper {
-    width: 100%;
-    aspect-ratio: 1/1;
-    background: #f5f5f5;
+    aspect-ratio: 1 / 1.2;
+    background: #f9f9f9;
     overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 15px;
 }
 
 .product-image-wrapper img {
@@ -44,37 +60,42 @@ header h1 {
     object-fit: cover;
 }
 
-/* --- MODAL FIX (FUNDO SÓLIDO) --- */
+/* --- MODAL (CORREÇÃO DA TRANSPARÊNCIA) --- */
 #product-detail-view {
-    display: none; /* Escondido por padrão */
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #ffffff; /* FUNDO SÓLIDO BRANCO */
-    z-index: 9999; /* ACIMA DE TUDO */
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: #ffffff !important; /* BRANCO TOTAL */
+    z-index: 99999 !important; /* ACIMA DE TUDO */
+    display: none;
     overflow-y: auto;
 }
 
-.modal-content {
-    max-width: 900px;
-    margin: 50px auto;
-    padding: 20px;
+.detail-container {
+    max-width: 1000px;
+    margin: 60px auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    gap: 40px;
+    padding: 20px;
+    background: #fff;
 }
 
-.close-btn {
+.close-detail {
     position: fixed;
-    top: 20px; right: 20px;
-    padding: 10px 20px;
+    top: 20px;
+    right: 20px;
     background: #000;
     color: #fff;
+    padding: 12px 25px;
+    font-weight: 900;
     cursor: pointer;
-    font-weight: bold;
+    z-index: 100000;
 }
 
 @media (max-width: 768px) {
-    .modal-content { grid-template-columns: 1fr; }
+    #product-grid { grid-template-columns: 1fr 1fr; }
+    .detail-container { grid-template-columns: 1fr; }
 }
