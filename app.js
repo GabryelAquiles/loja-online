@@ -17,42 +17,43 @@ let lojaConfig = {};
 async function init() {
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("loja");
+    const catFiltro = params.get("cat");
     if (!slug) return;
 
     const q = query(collection(db, "config_lojas"), where("slug", "==", slug));
     const snap = await getDocs(q);
-    if (snap.empty) {
-        console.error("Loja não encontrada no banco de dados.");
-        return;
-    }
+    if (snap.empty) return;
 
-    const d = snap.docs[0].data();
-    lojaConfig = d;
+    lojaConfig = snap.docs[0].data();
+    document.getElementById("store-name").innerText = lojaConfig.nome_loja;
+    document.getElementById("store-description").innerText = lojaConfig.descricao || "";
 
-    // Garante que o cabeçalho apareça e atualiza os dados
-    const header = document.getElementById("header-loja");
-    if (header) {
-        header.style.display = "flex"; // Força a exibição caso o CSS falhe
-        document.getElementById("store-name").innerText = d.nome_loja.toUpperCase();
-        document.getElementById("store-description").innerText = d.descricao || "";
-    }
-
-    carregarProdutos(slug);
+    carregarProdutos(slug, catFiltro);
 }
 
-function carregarProdutos(slug) {
+function carregarProdutos(slug, catFiltro) {
     const q = query(collection(db, "produtos"), where("loja_id", "==", slug));
     onSnapshot(q, s => {
         const grid = document.getElementById("product-grid");
-        if (!grid) return;
-        
+        const menuList = document.getElementById("menu-list");
         grid.innerHTML = "";
-        s.forEach(doc => {
-            const p = doc.data();
+        
+        let produtos = [];
+        s.forEach(doc => produtos.push(doc.data()));
+
+        // Criar Menu Dinâmico
+        const categorias = [...new Set(produtos.map(p => p.categoria).filter(c => c))];
+        menuList.innerHTML = `<li><a href="?loja=${slug}">TUDO</a></li>`;
+        categorias.forEach(c => {
+            menuList.innerHTML += `<li><a href="?loja=${slug}&cat=${c}">${c}</a></li>`;
+        });
+
+        // Filtrar e Mostrar Produtos
+        produtos.filter(p => !catFiltro || p.categoria === catFiltro).forEach(p => {
             const imagensJson = btoa(JSON.stringify(p.imagens || [p.url_imagem]));
             grid.innerHTML += `
                 <div class="product-card" onclick="abrirModal('${p.nome}', '${p.preco}', '${imagensJson}', '${encodeURIComponent(p.descricao || '')}')">
-                    <div class="product-image-wrapper"><img src="${p.url_imagem}" alt="${p.nome}"></div>
+                    <div class="product-image-wrapper"><img src="${p.url_imagem}"></div>
                     <div class="product-info">
                         <h2>${p.nome}</h2>
                         <span class="price">R$ ${p.preco}</span>
@@ -66,36 +67,27 @@ window.abrirModal = (nome, preco, imagensBase64, descEncoded) => {
     const imagens = JSON.parse(atob(imagensBase64));
     const desc = decodeURIComponent(descEncoded);
     const modal = document.getElementById("product-detail-view");
-    
-    // Injetamos uma estrutura com fundo branco sólido forçado
     modal.innerHTML = `
-        <div style="background-color: #ffffff; min-height: 100vh; width: 100%; position: absolute; top: 0; left: 0;">
-            <span class="close-detail" onclick="window.fecharModal()">× FECHAR</span>
-            <div class="detail-container">
-                <div class="carousel">
-                    <img src="${imagens[0]}" style="width: 100%; border: 1px solid #eee;">
-                </div>
-                <div class="product-data">
-                    <h1 style="font-weight:900; margin-bottom:10px; text-transform: uppercase;">${nome}</h1>
-                    <p style="font-size:1.8rem; font-weight: 900; margin-bottom:15px;">R$ ${preco}</p>
-                    <p style="color:#666; line-height: 1.6; margin-bottom: 25px;">${desc}</p>
-                    <button onclick="window.open('https://wa.me/${lojaConfig.whatsapp}?text=Olá! Tenho interesse no produto: ${nome}')" 
-                            style="width:100%; padding:20px; background:#000; color:#fff; font-weight:900; border:none; cursor:pointer; text-transform: uppercase; letter-spacing: 1px;">
-                        PEDIR VIA WHATSAPP
-                    </button>
-                </div>
+        <span class="close-detail" onclick="fecharModal()">× FECHAR</span>
+        <div class="detail-container">
+            <div class="carousel"><img src="${imagens[0]}" style="width:100%"></div>
+            <div class="product-data">
+                <h1 style="font-weight:900; text-transform:uppercase;">${nome}</h1>
+                <p style="font-size:1.5rem; margin:15px 0;">R$ ${preco}</p>
+                <p style="color:#666;">${desc}</p>
+                <button onclick="window.open('https://wa.me/${lojaConfig.whatsapp}?text=Interesse: ${nome}')" 
+                        style="width:100%; padding:20px; background:#000; color:#fff; font-weight:900; border:none; margin-top:30px; cursor:pointer;">
+                    PEDIR VIA WHATSAPP
+                </button>
             </div>
         </div>`;
-    
     modal.style.display = "block";
-    document.body.style.overflow = "hidden"; // Bloqueia o scroll da página atrás
+    document.body.style.overflow = "hidden";
 };
 
 window.fecharModal = () => {
-    const modal = document.getElementById("product-detail-view");
-    modal.style.display = "none";
-    document.body.style.overflow = "auto"; // Libera o scroll
+    document.getElementById("product-detail-view").style.display = "none";
+    document.body.style.overflow = "auto";
 };
 
-// Inicializa a loja
 init();
