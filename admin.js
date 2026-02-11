@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc, updateDoc, query, where, getDocs, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// Mesma configuração do seu app.js
 const firebaseConfig = {
     apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
     authDomain: "aquiles-sw-saas.firebaseapp.com",
@@ -13,36 +13,32 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
-const IMGBB_KEY = "a4f3b254234cb475b12a0f303a1b30f7";
 
-// Proteção de Rota
-onAuthStateChanged(auth, user => { if (!user) window.location.href = "login.html"; });
-document.getElementById("btn-logout").onclick = () => signOut(auth);
-
-// --- CARREGAR DADOS DA LOJA ---
-async function carregarDadosLoja(slug) {
+// 1. CARREGAR CONFIGURAÇÕES DA LOJA AO DIGITAR O SLUG
+document.getElementById("loja_id").addEventListener("blur", async (e) => {
+    const slug = e.target.value;
     if (!slug) return;
+
     const q = query(collection(db, "config_lojas"), where("slug", "==", slug));
     const snap = await getDocs(q);
-    
+
     if (!snap.empty) {
         const d = snap.docs[0].data();
         document.getElementById("nome_loja").value = d.nome_loja || "";
         document.getElementById("whatsapp_loja").value = d.whatsapp || "";
         document.getElementById("desc_loja").value = d.descricao || "";
-        if(d.cor_tema) document.getElementById("cor_tema").value = d.cor_tema;
+        document.getElementById("cor_tema").value = d.cor_tema || "#000000";
+        
+        // Carrega os produtos dessa loja específica
         listarProdutos(slug);
+    } else {
+        alert("Slug novo detectado. Preencha os campos para criar esta loja.");
     }
-}
+});
 
-document.getElementById("loja_id").addEventListener("blur", (e) => carregarDadosLoja(e.target.value));
-
-// SALVAR CONFIGURAÇÃO
-document.getElementById("btn-salvar-config").onclick = async () => {
+// 2. SALVAR OU ATUALIZAR CONFIG DA LOJA
+document.getElementById("btn-salvar-config").addEventListener("click", async () => {
     const slug = document.getElementById("loja_id").value;
-    if(!slug) return alert("Digite o Slug da loja!");
-
     const dados = {
         slug: slug,
         nome_loja: document.getElementById("nome_loja").value,
@@ -54,80 +50,69 @@ document.getElementById("btn-salvar-config").onclick = async () => {
     const q = query(collection(db, "config_lojas"), where("slug", "==", slug));
     const snap = await getDocs(q);
 
-    try {
-        if (!snap.empty) {
-            await updateDoc(doc(db, "config_lojas", snap.docs[0].id), dados);
-        } else {
-            await addDoc(collection(db, "config_lojas"), dados);
-        }
-        alert("Configurações salvas!");
-    } catch (e) { alert("Erro ao salvar: " + e.message); }
-};
+    if (snap.empty) {
+        await addDoc(collection(db, "config_lojas"), dados);
+    } else {
+        await updateDoc(doc(db, "config_lojas", snap.docs[0].id), dados);
+    }
+    alert("Configurações salvas!");
+});
 
-// CADASTRAR PRODUTO
-document.getElementById("btn-cadastrar").onclick = async () => {
-    const btn = document.getElementById("btn-cadastrar");
-    const files = document.getElementById("arquivo_imagem").files;
+// 3. CADASTRAR PRODUTO (Convertendo imagem para Base64 para facilitar agora)
+document.getElementById("btn-cadastrar").addEventListener("click", async () => {
     const slug = document.getElementById("loja_id").value;
+    const file = document.getElementById("arquivo_imagem").files[0];
+    
+    if (!slug || !file) {
+        alert("Preencha o Slug da loja e selecione uma imagem!");
+        return;
+    }
 
-    if (files.length === 0 || !slug) return alert("Selecione fotos e defina o Slug!");
-
-    const originalText = btn.innerText;
-    btn.innerText = "Subindo imagens...";
-    btn.disabled = true;
-
-    try {
-        const urls = [];
-        for (let file of files) {
-            const fd = new FormData();
-            fd.append("image", file);
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
-            const j = await res.json();
-            if(j.data) urls.push(j.data.url);
-        }
-
-        await addDoc(collection(db, "produtos"), {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+        const novoProduto = {
+            loja_id: slug,
             nome: document.getElementById("nome").value,
             preco: document.getElementById("preco").value,
-            categoria: document.getElementById("categoria_prod").value,
-            url_imagem: urls[0],
-            imagens: urls,
-            loja_id: slug,
-            data_criacao: new Date()
-        });
+            categoria: document.getElementById("categoria_prod").value.toLowerCase(),
+            url_imagem: reader.result, // Salva a string da imagem
+            imagens: [reader.result]
+        };
 
-        alert("Produto cadastrado com sucesso!");
-        location.reload();
-    } catch (e) {
-        alert("Erro no cadastro: " + e.message);
-        btn.innerText = originalText;
-        btn.disabled = false;
-    }
-};
+        await addDoc(collection(db, "produtos"), novoProduto);
+        alert("Produto publicado com sucesso!");
+        // Limpar campos
+        document.getElementById("nome").value = "";
+        document.getElementById("preco").value = "";
+    };
+});
 
-// LISTAR E REMOVER (AJUSTE DE ESCOPO)
+// 4. LISTAR PRODUTOS DA LOJA COM OPÇÃO DE DELETAR
 function listarProdutos(slug) {
     const q = query(collection(db, "produtos"), where("loja_id", "==", slug));
-    onSnapshot(q, s => {
-        const area = document.getElementById("lista-produtos");
-        area.innerHTML = "";
-        s.forEach(d => {
-            const p = d.data();
-            area.innerHTML += `
+    onSnapshot(q, (s) => {
+        const lista = document.getElementById("lista-produtos");
+        lista.innerHTML = "";
+        s.forEach(dDoc => {
+            const p = dDoc.data();
+            lista.innerHTML += `
                 <div class="prod-item">
                     <img src="${p.url_imagem}">
-                    <div class="prod-info"><strong>${p.nome}</strong><br>R$ ${p.preco}</div>
-                    <button class="btn-del" onclick="removerProd('${d.id}')">Excluir</button>
-                </div>`;
+                    <div style="flex:1">
+                        <strong>${p.nome}</strong><br>
+                        <small>${p.categoria} | R$ ${p.preco}</small>
+                    </div>
+                    <button onclick="deletarProduto('${dDoc.id}')" style="width:auto; padding:5px 10px; background:red;">Apagar</button>
+                </div>
+            `;
         });
     });
 }
 
-// Isso torna a função visível para o 'onclick' do HTML
-window.removerProd = async (id) => { 
-    if(confirm("Tem certeza que deseja excluir este produto?")) {
-        try {
-            await deleteDoc(doc(db, "produtos", id));
-        } catch (e) { alert("Erro ao deletar: " + e.message); }
+// 5. FUNÇÃO PARA DELETAR (Global para o HTML ler)
+window.deletarProduto = async (id) => {
+    if (confirm("Deseja apagar este produto?")) {
+        await deleteDoc(doc(db, "produtos", id));
     }
 };
