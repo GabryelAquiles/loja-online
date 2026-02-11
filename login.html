@@ -4,91 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AQUILESSW | LOGIN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap" rel="stylesheet">
     <style>
-        body { 
-            background-color: #000; 
-            color: #fff; 
-            font-family: 'Inter', sans-serif; 
-            height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            margin: 0;
-            overflow: hidden;
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .login-box { width: 100%; max-width: 320px; text-align: center; }
+        h1 { font-size: 2.5rem; letter-spacing: -3px; margin-bottom: 40px; }
+        input { 
+            width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a; 
+            color: #fff; padding: 18px; margin-bottom: 10px; outline: none; text-align: center;
         }
-        .login-card {
-            width: 100%;
-            max-width: 360px;
-            padding: 40px;
-            border: 1px solid #222;
-            background: #0a0a0a;
-            text-align: center;
+        button { 
+            width: 100%; padding: 18px; background: #fff; color: #000; 
+            border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; 
         }
-        h2 { font-weight: 900; letter-spacing: -2px; text-transform: uppercase; margin-bottom: 30px; font-size: 2rem; }
-        input {
-            width: 100%;
-            background: #000;
-            border: 1px solid #333;
-            color: #fff;
-            padding: 15px;
-            margin-bottom: 15px;
-            outline: none;
-            transition: 0.3s;
-        }
-        input:focus { border-color: #fff; }
-        button {
-            width: 100%;
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 15px;
-            font-weight: 900;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover { background: #ccc; }
-        #mensagem-erro { color: #ff4d4d; font-size: 0.7rem; margin-top: 15px; display: none; text-transform: uppercase; }
-        .back { display: block; margin-top: 25px; color: #555; text-decoration: none; font-size: 0.7rem; letter-spacing: 1px; }
+        #mensagem-erro { color: #ff3333; font-size: 0.7rem; margin-top: 20px; display: none; }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <h2>AQUILESSW</h2>
-        <input type="email" id="email" placeholder="E-MAIL">
+    <div class="login-box">
+        <h1>AQUILES_SW</h1>
+        <input type="email" id="email" placeholder="EMAIL_ADMIN">
         <input type="password" id="senha" placeholder="SENHA">
-        <button id="btn-entrar">ENTRAR NO SISTEMA</button>
-        <p id="mensagem-erro">Acesso Negado. Verifique os dados.</p>
-        <a href="index.html" class="back">← VOLTAR À VITRINE</a>
+        <button id="btn-entrar">ENTRAR</button>
+        <p id="mensagem-erro">ACESSO NEGADO</p>
     </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
-            authDomain: "aquiles-sw-saas.firebaseapp.com",
-            projectId: "aquiles-sw-saas",
-            storageBucket: "aquiles-sw-saas.appspot.com",
-            messagingSenderId: "878262536684",
-            appId: "1:878262536684:web:e32ac0b9755ca101e398c9"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        document.getElementById('btn-entrar').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const senha = document.getElementById('senha').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, senha);
-                window.location.href = "admin.html";
-            } catch (error) {
-                document.getElementById('mensagem-erro').style.display = "block";
-            }
-        });
-    </script>
-</body>
+    </body>
 </html>

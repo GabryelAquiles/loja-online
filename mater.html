@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <title>AQUILESSW | MASTER CONTROL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        body { background: #fff; color: #000; font-family: 'Inter', sans-serif; padding: 50px; }
+        .master-container { max-width: 1000px; margin: auto; }
+        h1 { font-weight: 900; font-size: 2.5rem; letter-spacing: -2px; margin-bottom: 50px; border-bottom: 5px solid #000; display: inline-block; }
+        .card { border: 1px solid #eee; padding: 30px; margin-bottom: 30px; }
+        input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #eee; background: #fafafa; outline: none; }
+        button { padding: 20px; background: #000; color: #fff; border: none; font-weight: 900; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .store-item { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid #eee; align-items: center; }
+        .status { font-size: 0.7rem; font-weight: 900; padding: 5px 10px; background: #000; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="master-container">
+        <h1>MASTER_CONTROL_PANEL</h1>
+
+        <div class="card">
+            <h2>CRIAR NOVA LOJA (ONBOARDING)</h2>
+            <input type="text" id="new_slug" placeholder="SLUG DA LOJA (ex: loja-do-bruno)">
+            <input type="text" id="new_nome" placeholder="NOME DA MARCA">
+            <input type="email" id="new_email" placeholder="E-MAIL DO LOJISTA">
+            <button onclick="criarLoja()">GERAR SISTEMA DE VENDAS</button>
+        </div>
+
+        <div class="card">
+            <h2>LOJISTAS ATIVOS</h2>
+            <div id="lista-lojas-master"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { /* Teu Config aqui */ };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.criarLoja = async () => {
+            const slug = document.getElementById('new_slug').value;
+            const nome = document.getElementById('new_nome').value;
+            
+            if(!slug || !nome) return alert("Preenche os dados!");
+
+            await addDoc(collection(db, "config_lojas"), {
+                slug: slug,
+                nome_loja: nome,
+                descricao: "Bem-vindo à nossa nova vitrine.",
+                whatsapp: "55",
+                cor_tema: "#000000",
+                links_cabecalho: []
+            });
+
+            alert("SISTEMA CRIADO! O lojista já pode aceder ao admin.");
+            location.reload();
+        };
+
+        // Função para listar lojas... (vou completar no próximo passo)
+    </script>
+</body>
+</html>

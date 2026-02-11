@@ -4,124 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AQUILESSW | ADMIN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #000; --card: #0a0a0a; --border: #222; --accent: #fff; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; padding: 20px; }
+        body { background: #f9f9f9; color: #000; font-family: 'Inter', sans-serif; padding: 40px 20px; }
         .container { max-width: 800px; margin: auto; }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
-        h1 { font-weight: 900; letter-spacing: -1px; font-size: 1.2rem; }
-        .box { background: var(--card); border: 1px solid var(--border); padding: 25px; margin-bottom: 20px; }
-        .label-tech { font-size: 0.65rem; color: #555; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; display: block; margin-bottom: 8px; }
-        input, select, textarea { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; margin-bottom: 15px; outline: none; font-family: inherit; }
-        input:focus { border-color: #555; }
-        button { width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #bbb; }
-        .btn-secondary { background: #111; color: #fff; border: 1px solid var(--border); }
-        .btn-secondary:hover { background: #222; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
-        .btn-del { background: #ff4d4d; color: #fff; width: auto; padding: 4px 10px; font-size: 0.7rem; border: none; cursor: pointer; }
-        #lista-links-admin { margin-bottom: 15px; }
-        .footer-admin {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 0.7rem;
-            color: #555;
-        }
-        .footer-admin a {
-            color: #888;
-            text-decoration: none;
-        }
-        .footer-admin a:hover {
-            color: #fff;
-        }
+        .box { background: #fff; border: 1px solid #eee; padding: 30px; margin-bottom: 20px; border-radius: 8px; }
+        h1 { font-weight: 900; font-size: 1.2rem; margin-bottom: 30px; text-transform: uppercase; }
+        .label { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #aaa; display: block; margin-bottom: 8px; }
+        input, textarea { width: 100%; padding: 15px; border: 1px solid #eee; background: #fafafa; margin-bottom: 20px; outline: none; }
+        button { width: 100%; padding: 18px; background: #000; color: #fff; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        .btn-sec { background: #eee; color: #000; margin-top: 10px; }
+        .prod-item { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .prod-item img { width: 50px; height: 50px; object-fit: cover; }
     </style>
 </head>
 <body>
     <div class="container">
-
-        <header>
-            <h1>AQUILESSW // SYSTEM v1.0</h1>
-
-            <!-- BOTÃO CORRIGIDO (SEM onclick) -->
-            <button id="btn-logout"
-                class="btn-secondary"
-                style="width:auto; padding: 5px 15px; font-size: 0.7rem;">
-                LOGOUT
-            </button>
-        </header>
-
+        <h1>Admin Control</h1>
         <div class="box">
-            <span class="label-tech">Core Config</span>
-            
-            <label class="label-tech">ID da Loja (Slug da URL)</label>
-            <input type="text" id="loja_id" placeholder="ex: minha-loja-street">
-            
-            <label class="label-tech">Nome Exibido da Loja</label>
-            <input type="text" id="nome_loja" placeholder="Ex: Aquiles Streetwear">
-
-            <label class="label-tech">WhatsApp de Vendas (Apenas números com DDD)</label>
-            <input type="text" id="whatsapp_loja" placeholder="Ex: 5511999999999">
-            
-            <label class="label-tech">Logo da Marca (Transparente recomendada)</label>
-            <input type="file" id="logo_loja">
-            
-            <label class="label-tech">Bio / Slogan da Marca</label>
-            <input type="text" id="desc_loja" placeholder="Ex: O futuro do estilo urbano.">
-            
-            <label class="label-tech">Cor de Destaque (Tema)</label>
-            <input type="color" id="cor_tema" value="#ffffff" style="height: 40px; padding: 2px; cursor: pointer;">
-
-            <hr style="border:0; border-top:1px solid #222; margin: 20px 0;">
-            
-            <span class="label-tech">Navegação da Vitrine (Menus)</span>
-            <div id="lista-links-admin"></div>
-
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="menu_texto" placeholder="TEXTO (Ex: Moletons)" style="margin:0">
-                <input type="text" id="menu_url" placeholder="CATEGORIA (Ex: moletons)" style="margin:0">
-                <button onclick="adicionarLinkMenu()" style="width:60px; background: #222; color: #fff;">+</button>
-            </div>
-
-            <button id="btn-salvar-config" style="margin-top: 20px;">
-                ATUALIZAR IDENTIDADE DA LOJA
-            </button>
+            <span class="label">Configuração da Loja</span>
+            <input type="text" id="loja_id" placeholder="SLUG DA LOJA (ex: loja-verde)">
+            <input type="text" id="nome_loja" placeholder="NOME DA MARCA">
+            <input type="text" id="whatsapp_loja" placeholder="WHATSAPP (55...)">
+            <textarea id="desc_loja" placeholder="DESCRIÇÃO DA LOJA"></textarea>
+            <button id="btn-salvar-config">ATUALIZAR LOJA</button>
         </div>
 
         <div class="box">
-            <span class="label-tech">Inventory Management (Produtos)</span>
-
-            <label class="label-tech">Nome do Produto</label>
+            <span class="label">Novo Produto</span>
             <input type="text" id="nome" placeholder="NOME DO ITEM">
-            
-            <label class="label-tech">Preço de Venda</label>
-            <input type="text" id="preco" placeholder="99.90">
-            
-            <label class="label-tech">Categoria (Deve ser igual ao Menu acima)</label>
-            <input type="text" id="categoria_prod" placeholder="Ex: moletons">
-            
-            <label class="label-tech">Imagem do Produto</label>
+            <input type="text" id="preco" placeholder="PREÇO">
+            <input type="text" id="categoria_prod" placeholder="CATEGORIA">
             <input type="file" id="arquivo_imagem">
-            
-            <button id="btn-cadastrar" class="btn-secondary">
-                PUBLICAR NO CATÁLOGO
-            </button>
+            <button id="btn-cadastrar" class="btn-sec">PUBLICAR PRODUTO</button>
         </div>
 
         <div class="box">
-            <span class="label-tech">Active Inventory</span>
+            <span class="label">Inventário</span>
             <div id="lista-produtos"></div>
         </div>
-
-        <div class="footer-admin">
-            Criado por 
-            <a href="https://www.aquilessw.com.br" target="_blank">
-                Aquiles Softwares
-            </a>
-        </div>
-
     </div>
-
     <script type="module" src="admin.js"></script>
 </body>
 </html>
