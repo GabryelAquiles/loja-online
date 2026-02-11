@@ -6,15 +6,20 @@
     <title>AQUILESSW | VITRINE</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* Corrigido para Branco (Light Mode) para evitar o flash preto ao carregar */
-        body { background-color: #ffffff; margin: 0; } 
-        
-        /* Ajuste para garantir que o modal comece escondido */
-        #product-detail-view { display: none; }
+        body { background-color: #ffffff; margin: 0; font-family: 'Inter', sans-serif; } 
+        #product-detail-view { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(255,255,255,0.95); 
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .product-card { cursor: pointer; }
     </style>
 </head>
 <body>
@@ -25,8 +30,7 @@
         <p id="store-description"></p>
         
         <nav id="main-nav">
-            <ul id="menu-list">
-                </ul>
+            <ul id="menu-list"></ul>
         </nav>
     </header>
 
@@ -35,8 +39,7 @@
             </div>
     </main>
 
-    <div id="product-detail-view">
-        </div>
+    <div id="product-detail-view"></div>
 
     <footer>
         <div class="footer-content">
