@@ -16,10 +16,11 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const IMGBB_KEY = "a4f3b254234cb475b12a0f303a1b30f7";
 
+// Proteção de Rota
 onAuthStateChanged(auth, user => { if (!user) window.location.href = "login.html"; });
 document.getElementById("btn-logout").onclick = () => signOut(auth);
 
-// --- FUNÇÃO PARA CARREGAR DADOS DA LOJA ---
+// --- CARREGAR DADOS DA LOJA ---
 async function carregarDadosLoja(slug) {
     if (!slug) return;
     const q = query(collection(db, "config_lojas"), where("slug", "==", slug));
@@ -37,9 +38,11 @@ async function carregarDadosLoja(slug) {
 
 document.getElementById("loja_id").addEventListener("blur", (e) => carregarDadosLoja(e.target.value));
 
-// SALVAR CONFIG
+// SALVAR CONFIGURAÇÃO
 document.getElementById("btn-salvar-config").onclick = async () => {
     const slug = document.getElementById("loja_id").value;
+    if(!slug) return alert("Digite o Slug da loja!");
+
     const dados = {
         slug: slug,
         nome_loja: document.getElementById("nome_loja").value,
@@ -51,12 +54,14 @@ document.getElementById("btn-salvar-config").onclick = async () => {
     const q = query(collection(db, "config_lojas"), where("slug", "==", slug));
     const snap = await getDocs(q);
 
-    if (!snap.empty) {
-        await updateDoc(doc(db, "config_lojas", snap.docs[0].id), dados);
-    } else {
-        await addDoc(collection(db, "config_lojas"), dados);
-    }
-    alert("Loja Atualizada!");
+    try {
+        if (!snap.empty) {
+            await updateDoc(doc(db, "config_lojas", snap.docs[0].id), dados);
+        } else {
+            await addDoc(collection(db, "config_lojas"), dados);
+        }
+        alert("Configurações salvas!");
+    } catch (e) { alert("Erro ao salvar: " + e.message); }
 };
 
 // CADASTRAR PRODUTO
@@ -65,30 +70,42 @@ document.getElementById("btn-cadastrar").onclick = async () => {
     const files = document.getElementById("arquivo_imagem").files;
     const slug = document.getElementById("loja_id").value;
 
-    if (files.length === 0 || !slug) return alert("Faltam dados!");
+    if (files.length === 0 || !slug) return alert("Selecione fotos e defina o Slug!");
 
-    btn.innerText = "Enviando...";
-    const urls = [];
-    for (let file of files) {
-        const fd = new FormData();
-        fd.append("image", file);
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
-        const j = await res.json();
-        urls.push(j.data.url);
+    const originalText = btn.innerText;
+    btn.innerText = "Subindo imagens...";
+    btn.disabled = true;
+
+    try {
+        const urls = [];
+        for (let file of files) {
+            const fd = new FormData();
+            fd.append("image", file);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
+            const j = await res.json();
+            if(j.data) urls.push(j.data.url);
+        }
+
+        await addDoc(collection(db, "produtos"), {
+            nome: document.getElementById("nome").value,
+            preco: document.getElementById("preco").value,
+            categoria: document.getElementById("categoria_prod").value,
+            url_imagem: urls[0],
+            imagens: urls,
+            loja_id: slug,
+            data_criacao: new Date()
+        });
+
+        alert("Produto cadastrado com sucesso!");
+        location.reload();
+    } catch (e) {
+        alert("Erro no cadastro: " + e.message);
+        btn.innerText = originalText;
+        btn.disabled = false;
     }
-
-    await addDoc(collection(db, "produtos"), {
-        nome: document.getElementById("nome").value,
-        preco: document.getElementById("preco").value,
-        categoria: document.getElementById("categoria_prod").value,
-        url_imagem: urls[0],
-        imagens: urls,
-        loja_id: slug
-    });
-    alert("Produto Salvo!");
-    location.reload();
 };
 
+// LISTAR E REMOVER (AJUSTE DE ESCOPO)
 function listarProdutos(slug) {
     const q = query(collection(db, "produtos"), where("loja_id", "==", slug));
     onSnapshot(q, s => {
@@ -96,8 +113,21 @@ function listarProdutos(slug) {
         area.innerHTML = "";
         s.forEach(d => {
             const p = d.data();
-            area.innerHTML += `<div class="prod-item"><img src="${p.url_imagem}"><div class="prod-info"><strong>${p.nome}</strong><br>R$ ${p.preco}</div><button class="btn-del" onclick="removerProd('${d.id}')">Excluir</button></div>`;
+            area.innerHTML += `
+                <div class="prod-item">
+                    <img src="${p.url_imagem}">
+                    <div class="prod-info"><strong>${p.nome}</strong><br>R$ ${p.preco}</div>
+                    <button class="btn-del" onclick="removerProd('${d.id}')">Excluir</button>
+                </div>`;
         });
     });
 }
-window.removerProd = async id => { if(confirm("Excluir?")) await deleteDoc(doc(db, "produtos", id)); };
+
+// Isso torna a função visível para o 'onclick' do HTML
+window.removerProd = async (id) => { 
+    if(confirm("Tem certeza que deseja excluir este produto?")) {
+        try {
+            await deleteDoc(doc(db, "produtos", id));
+        } catch (e) { alert("Erro ao deletar: " + e.message); }
+    }
+};
