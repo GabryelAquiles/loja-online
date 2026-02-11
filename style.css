@@ -1,13 +1,12 @@
 :root {
-    --bg: #ffffff;           /* Fundo Branco Puro */
-    --text: #000000;         /* Texto Preto */
-    --accent: #fcfcfc;       /* Cards levemente acinzentados */
-    --cor-primaria: #000000; 
-    --cor-whatsapp: #25D366; 
+    --bg: #ffffff;
+    --text: #000000;
+    --accent: #fcfcfc;
+    --cor-primaria: #000000;
+    --cor-whatsapp: #25D366;
     --font: 'Inter', sans-serif;
-    --border: #eeeeee;       /* Bordas finas e claras */
+    --border: #eeeeee;
     
-    /* Variáveis dinâmicas para o Header */
     --header-bg: #ffffff;
     --header-text: #000000;
 }
@@ -20,10 +19,10 @@ body {
     font-family: var(--font);
     padding-bottom: 40px;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden; /* Evita rolagem lateral no celular */
+    overflow-x: hidden;
 }
 
-/* --- HEADER DINÂMICO --- */
+/* --- HEADER --- */
 header {
     text-align: center;
     padding: 60px 20px 30px;
@@ -37,7 +36,7 @@ header {
 
 header h1 { 
     font-weight: 900; 
-    font-size: clamp(2rem, 10vw, 4rem); /* Tamanho responsivo automático */
+    font-size: clamp(2rem, 10vw, 4rem);
     text-transform: uppercase;
     letter-spacing: -2px;
     line-height: 0.9;
@@ -50,39 +49,6 @@ header h1 {
     text-transform: uppercase;
     opacity: 0.6;
     max-width: 80%;
-}
-
-/* --- NAVEGAÇÃO --- */
-#main-nav {
-    margin-top: 30px;
-    width: 100%;
-    max-width: 1200px;
-}
-
-#menu-list {
-    display: flex;
-    justify-content: center;
-    list-style: none;
-    gap: 20px;
-    padding: 15px 10px;
-    overflow-x: auto; /* Rolagem horizontal se as categorias forem muitas */
-    white-space: nowrap;
-}
-
-#menu-list a {
-    text-decoration: none;
-    color: var(--text);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 700;
-    padding: 5px 10px;
-    border: 1px solid transparent;
-    transition: 0.3s;
-}
-
-#menu-list a:hover {
-    border-bottom: 1px solid #000;
 }
 
 /* --- GRID DE PRODUTOS --- */
@@ -98,15 +64,15 @@ header h1 {
 .product-card {
     background: var(--bg);
     border: 1px solid var(--border);
-    padding: 0; /* Removido padding para imagem encostar nas bordas */
     transition: 0.3s;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .image-container {
     background-color: #f9f9f9;
-    aspect-ratio: 1/1.2; /* Formato mais alto, estilo moda/streetwear */
+    aspect-ratio: 1/1.2;
     overflow: hidden;
 }
 
@@ -116,7 +82,6 @@ header h1 {
     object-fit: cover;
 }
 
-/* --- INFORMAÇÕES E BOTÃO --- */
 .product-info { 
     padding: 20px 15px;
     text-align: center;
@@ -127,7 +92,6 @@ header h1 {
     font-weight: 800;
     text-transform: uppercase;
     margin-bottom: 8px;
-    letter-spacing: 0.5px;
 }
 
 .price { 
@@ -147,42 +111,57 @@ header h1 {
     font-size: 0.7rem;
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 1px;
     transition: 0.3s;
 }
 
-.btn-wa:hover {
-    background: var(--cor-whatsapp);
+/* --- MODAL DE DETALHES (O QUE ESTAVA FALTANDO) --- */
+#product-detail-view {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    overflow-y: auto;
 }
 
-/* --- FOOTER --- */
-footer {
-    text-align: center;
-    padding: 40px 20px;
-    border-top: 1px solid var(--border);
-    background: #fafafa;
+.detail-container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: #fff;
+    border: 1px solid var(--border);
+    position: relative;
 }
 
-footer p { font-size: 0.6rem; letter-spacing: 2px; color: #999; margin-bottom: 10px; }
+.close-detail {
+    position: fixed;
+    top: 20px; right: 20px;
+    background: #000;
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: 900;
+    font-size: 0.7rem;
+    cursor: pointer;
+    z-index: 10001;
+}
 
-/* --- AJUSTES ESPECÍFICOS PARA CELULAR --- */
+.carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+}
+
+.carousel img {
+    width: 100%;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+}
+
+/* --- RESPONSIVIDADE CELULAR --- */
 @media (max-width: 768px) {
-    header { padding: 40px 15px 20px; }
-    
     #product-grid { 
-        grid-template-columns: 1fr 1fr; /* Dois produtos por linha no mobile */
+        grid-template-columns: 1fr 1fr;
         gap: 10px; 
-        padding: 0 10px;
     }
-
-    .product-info { padding: 12px 8px; }
-    
-    .product-info h2 { font-size: 0.7rem; }
-    
-    .price { font-size: 0.8rem; margin-bottom: 10px; }
-
-    .btn-wa { 
-        padding: 12px; 
-        font-size: 0.6rem; 
-    }
+    .detail-container { margin: 0; max-width: 100%; border: none; }
 }
