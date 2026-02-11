@@ -1,51 +1,41 @@
 :root {
     --bg: #ffffff;
     --text: #000000;
-    --border: #eeeeee;
-    --font: 'Inter', sans-serif;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-    overflow-x: hidden;
-}
-
-/* --- HEADER --- */
+/* --- HEADER FIX --- */
 header {
-    padding: 60px 5% 20px;
+    width: 100%;
+    padding: 60px 20px;
     text-align: center;
-    border-bottom: 1px solid var(--border);
-    background: #fff;
+    background-color: var(--bg);
+    position: relative; /* Necessário para o z-index funcionar */
+    z-index: 10; 
+    border-bottom: 1px solid #eee;
 }
 
-header h1 { 
-    font-weight: 900; 
-    font-size: clamp(2rem, 8vw, 4rem); 
+header h1 {
+    font-size: 3rem;
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: -3px;
 }
 
-/* --- VITRINE --- */
+/* --- GRID E CARDS --- */
 #product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    padding: 40px 5%;
+    padding: 20px;
 }
 
-.product-card { cursor: pointer; text-align: center; }
+.product-card { cursor: pointer; }
 
-/* Moldura da imagem - Importante para não quebrar o layout */
+/* IMPORTANTE: Esta classe deve bater com o JS */
 .product-image-wrapper {
-    aspect-ratio: 1 / 1.2;
-    background: #f9f9f9;
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: #f5f5f5;
     overflow: hidden;
-    border: 1px solid var(--border);
-    margin-bottom: 15px;
 }
 
 .product-image-wrapper img {
@@ -54,53 +44,37 @@ header h1 {
     object-fit: cover;
 }
 
-.product-info h2 { font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; }
-.price { font-weight: 900; }
-
-/* --- MODAL DE DETALHES --- */
+/* --- MODAL FIX (FUNDO SÓLIDO) --- */
 #product-detail-view {
+    display: none; /* Escondido por padrão */
     position: fixed;
     top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: #ffffff; /* Fundo sólido para não ver os produtos atrás */
-    z-index: 10000;
-    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; /* FUNDO SÓLIDO BRANCO */
+    z-index: 9999; /* ACIMA DE TUDO */
     overflow-y: auto;
 }
 
-.close-detail {
-    position: fixed;
-    top: 20px; right: 20px;
-    background: #000;
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.detail-container {
-    max-width: 1000px;
-    margin: 80px auto;
+.modal-content {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    padding: 20px;
+    gap: 30px;
 }
 
-.carousel img { width: 100%; border: 1px solid var(--border); }
-
-.product-data button {
-    width: 100%;
-    padding: 20px;
-    background: #25D366; /* Verde do WhatsApp */
+.close-btn {
+    position: fixed;
+    top: 20px; right: 20px;
+    padding: 10px 20px;
+    background: #000;
     color: #fff;
-    border: none;
-    font-weight: 900;
     cursor: pointer;
-    margin-top: 20px;
+    font-weight: bold;
 }
 
 @media (max-width: 768px) {
-    #product-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .detail-container { grid-template-columns: 1fr; margin-top: 60px; }
+    .modal-content { grid-template-columns: 1fr; }
 }
