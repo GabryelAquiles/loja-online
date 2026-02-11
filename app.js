@@ -20,7 +20,7 @@ async function init() {
     const slug = params.get("loja");
 
     if (!slug) {
-        document.getElementById("store-name").innerText = "AQUILESSW | VITRINE";
+        document.getElementById("store-name").innerText = "VITRINE";
         return;
     }
 
@@ -35,8 +35,10 @@ async function init() {
     document.getElementById("store-name").innerText = d.nome_loja;
     document.getElementById("store-description").innerText = d.descricao || "";
     
-    if(d.cor_tema) {
-        document.documentElement.style.setProperty('--cor-whatsapp', d.cor_tema);
+    if (d.logo_url) {
+        const logo = document.getElementById("store-logo");
+        logo.src = d.logo_url;
+        logo.style.display = "block";
     }
 
     carregarProdutos(slug, params.get("cat"));
@@ -56,11 +58,12 @@ function carregarProdutos(slug, cat) {
             
             grid.innerHTML += `
                 <div class="product-card" onclick="abrirModal('${p.nome}', '${p.preco}', '${imagensJson}', '${encodeURIComponent(p.descricao || '')}')">
-                    <div class="image-container"><img src="${p.url_imagem}"></div>
+                    <div class="product-image-wrapper">
+                        <img src="${p.url_imagem}" alt="${p.nome}">
+                    </div>
                     <div class="product-info">
                         <h2>${p.nome}</h2>
                         <span class="price">R$ ${p.preco}</span>
-                        <button class="btn-wa">VER DETALHES</button>
                     </div>
                 </div>
             `;
@@ -79,11 +82,11 @@ window.abrirModal = (nome, preco, imagensBase64, descEncoded) => {
             <div class="carousel">
                 ${imagens.map(img => `<img src="${img}">`).join('')}
             </div>
-            <div style="padding:30px; text-align:center;">
-                <h1 style="font-weight:900; text-transform:uppercase; margin-bottom:10px;">${nome}</h1>
-                <span style="font-size:1.5rem; display:block; margin-bottom:15px; font-weight:bold;">R$ ${preco}</span>
-                <p style="color:#666; margin-bottom:25px; font-size:0.9rem; line-height:1.5;">${descricao}</p>
-                <button onclick="contato('${nome}', '${preco}')" style="width:100%; padding:20px; background:#000; color:#fff; font-weight:900; border:none; cursor:pointer; text-transform:uppercase;">
+            <div class="product-data">
+                <h1>${nome}</h1>
+                <span class="price-detail">R$ ${preco}</span>
+                <p class="description">${descricao}</p>
+                <button class="btn-whatsapp" onclick="contato('${nome}', '${preco}')">
                     PEDIR VIA WHATSAPP
                 </button>
             </div>
