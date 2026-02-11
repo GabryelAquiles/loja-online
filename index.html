@@ -10,14 +10,17 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* Garantia de fundo imersivo antes do CSS carregar */
-        body { background-color: #050505; margin: 0; } 
+        /* Corrigido para Branco (Light Mode) para evitar o flash preto ao carregar */
+        body { background-color: #ffffff; margin: 0; } 
+        
+        /* Ajuste para garantir que o modal comece escondido */
+        #product-detail-view { display: none; }
     </style>
 </head>
 <body>
 
     <header id="header-loja">
-        <img id="store-logo" src="" alt="Logo">
+        <img id="store-logo" src="" alt="">
         <h1 id="store-name">CARREGANDO...</h1>
         <p id="store-description"></p>
         
