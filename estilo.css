@@ -1,8 +1,6 @@
 :root {
     --bg: #ffffff;
-    --bg-alt: #fcfcfc;
     --text: #000000;
-    --accent: #f4f4f4;
     --border: #eeeeee;
     --font: 'Inter', sans-serif;
 }
@@ -13,83 +11,59 @@ body {
     background-color: var(--bg);
     color: var(--text);
     font-family: var(--font);
-    -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
 }
 
 /* --- HEADER --- */
 header {
-    padding: 80px 5% 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 60px 5% 20px;
     text-align: center;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
 }
-
-#store-logo { max-width: 140px; margin-bottom: 20px; display: none; }
-#store-logo[src=""] { display: none; }
 
 header h1 { 
     font-weight: 900; 
-    font-size: clamp(2.5rem, 8vw, 5.5rem); 
+    font-size: clamp(2rem, 8vw, 4rem); 
     text-transform: uppercase;
-    letter-spacing: -5px;
-    line-height: 0.85;
-}
-
-#store-description {
-    font-size: 0.65rem;
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    color: #a0a0a0;
-    margin-top: 15px;
+    letter-spacing: -3px;
 }
 
 /* --- VITRINE --- */
 #product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
     padding: 40px 5%;
-    max-width: 1400px;
-    margin: 0 auto;
 }
 
-.product-card { cursor: pointer; }
+.product-card { cursor: pointer; text-align: center; }
 
+/* Moldura da imagem - Importante para não quebrar o layout */
 .product-image-wrapper {
-    aspect-ratio: 1 / 1.25;
-    background: var(--bg-alt);
+    aspect-ratio: 1 / 1.2;
+    background: #f9f9f9;
     overflow: hidden;
     border: 1px solid var(--border);
+    margin-bottom: 15px;
 }
 
 .product-image-wrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.8s ease;
 }
 
-.product-card:hover img { transform: scale(1.05); }
-
-.product-info {
-    padding: 15px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.product-info h2 { font-size: 0.8rem; font-weight: 400; text-transform: uppercase; }
-.price { font-weight: 900; font-size: 0.9rem; }
+.product-info h2 { font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; }
+.price { font-weight: 900; }
 
 /* --- MODAL DE DETALHES --- */
 #product-detail-view {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: #ffffff;
-    z-index: 9999;
+    background: #ffffff; /* Fundo sólido para não ver os produtos atrás */
+    z-index: 10000;
     display: none;
     overflow-y: auto;
 }
@@ -97,49 +71,36 @@ header h1 {
 .close-detail {
     position: fixed;
     top: 20px; right: 20px;
-    font-size: 1rem;
-    cursor: pointer;
     background: #000;
     color: #fff;
     padding: 10px 20px;
-    font-weight: 900;
-    z-index: 10000;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .detail-container {
+    max-width: 1000px;
+    margin: 80px auto;
     display: grid;
-    grid-template-columns: 1fr 450px;
+    grid-template-columns: 1fr 1fr;
     gap: 40px;
-    max-width: 1200px;
-    margin: 60px auto;
     padding: 20px;
 }
 
-.carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; }
-.carousel img { width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; }
+.carousel img { width: 100%; border: 1px solid var(--border); }
 
-.product-data h1 { font-weight: 900; font-size: 2rem; text-transform: uppercase; margin-bottom: 10px; }
-.price-detail { font-size: 1.5rem; font-weight: 900; display: block; margin-bottom: 20px; }
-.description { color: #666; line-height: 1.6; margin-bottom: 30px; }
-
-.btn-whatsapp {
+.product-data button {
     width: 100%;
     padding: 20px;
-    background: #000;
+    background: #25D366; /* Verde do WhatsApp */
     color: #fff;
     border: none;
     font-weight: 900;
     cursor: pointer;
-    letter-spacing: 2px;
+    margin-top: 20px;
 }
-
-/* --- FOOTER --- */
-footer { text-align: center; padding: 60px 20px; border-top: 1px solid var(--border); }
-footer p { font-size: 0.7rem; color: #ccc; }
-.admin-link { color: #000; text-decoration: none; font-weight: bold; font-size: 0.6rem; }
 
 @media (max-width: 768px) {
     #product-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .detail-container { grid-template-columns: 1fr; margin-top: 80px; }
-    header { padding: 50px 5% 20px; }
+    .detail-container { grid-template-columns: 1fr; margin-top: 60px; }
 }
