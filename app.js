@@ -32,13 +32,11 @@ async function init() {
     // Preenche Interface
     document.getElementById("store-name").innerText = d.nome_loja;
     document.getElementById("store-description").innerText = d.descricao;
-    if(d.logo_url) document.getElementById("store-logo").src = d.logo_url;
-
-    // Menu mantendo o slug
-    const menu = document.getElementById("menu-list");
-    menu.innerHTML = (d.links_cabecalho || []).map(l => `
-        <li><a href="?loja=${slug}&cat=${l.url.replace('?cat=', '')}">${l.texto}</a></li>
-    `).join("");
+    
+    // Atualiza a cor dos botões se houver cor personalizada
+    if(d.cor_tema) {
+        document.documentElement.style.setProperty('--cor-whatsapp', d.cor_tema);
+    }
 
     carregarProdutos(slug, params.get("cat"));
 }
@@ -52,12 +50,16 @@ function carregarProdutos(slug, cat) {
         grid.innerHTML = "";
         s.forEach(doc => {
             const p = doc.data();
+            // Transformamos o array de imagens em String para passar na função
+            const imagensJson = btoa(JSON.stringify(p.imagens || [p.url_imagem]));
+            
             grid.innerHTML += `
-                <div class="product-card" onclick="verProduto('${p.nome}', '${p.preco}', '${p.url_imagem}', '${p.descricao || ''}')">
-                    <div class="product-image-wrapper"><img src="${p.url_imagem}"></div>
+                <div class="product-card" onclick="abrirModal('${p.nome}', '${p.preco}', '${imagensJson}', '${encodeURIComponent(p.descricao || '')}')">
+                    <div class="image-container"><img src="${p.url_imagem}"></div>
                     <div class="product-info">
                         <h2>${p.nome}</h2>
                         <span class="price">R$ ${p.preco}</span>
+                        <button class="btn-wa">VER DETALHES</button>
                     </div>
                 </div>
             `;
@@ -65,17 +67,25 @@ function carregarProdutos(slug, cat) {
     });
 }
 
-window.verProduto = (nome, preco, img, desc) => {
+// Função aprimorada para abrir o modal com suporte a carrossel
+window.abrirModal = (nome, preco, imagensBase64, descEncoded) => {
+    const imagens = JSON.parse(atob(imagensBase64));
+    const descricao = decodeURIComponent(descEncoded);
     const modal = document.getElementById("product-detail-view");
+    
     modal.innerHTML = `
-        <span class="close-detail" onclick="this.parentElement.style.display='none'">× CLOSE</span>
+        <span class="close-detail" onclick="this.parentElement.style.display='none'">× FECHAR</span>
         <div class="detail-container">
-            <div class="carousel"><img src="${img}"></div>
-            <div class="product-data">
-                <h1>${nome}</h1>
-                <span class="price-detail">R$ ${preco}</span>
-                <p class="description">${desc}</p>
-                <button class="btn-whatsapp" onclick="contato('${nome}', '${preco}')">PEDIR VIA WHATSAPP</button>
+            <div class="carousel" style="display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:10px;">
+                ${imagens.map(img => `<img src="${img}" style="width:100%; flex-shrink:0; scroll-snap-align:start; border-radius:8px;">`).join('')}
+            </div>
+            <div class="product-data" style="padding:20px; text-align:center;">
+                <h1 style="font-weight:900; text-transform:uppercase;">${nome}</h1>
+                <span class="price-detail" style="font-size:1.5rem; display:block; margin:10px 0;">R$ ${preco}</span>
+                <p class="description" style="color:#666; margin-bottom:20px;">${descricao}</p>
+                <button class="btn-whatsapp" onclick="contato('${nome}', '${preco}')" style="width:100%; padding:20px; background:#000; color:#fff; font-weight:900; border:none; border-radius:8px; cursor:pointer;">
+                    PEDIR VIA WHATSAPP
+                </button>
             </div>
         </div>
     `;
