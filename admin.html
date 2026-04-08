@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Aquiles SW</title>
+    <title>Aquiles SW | Iniciando</title>
     <style>
         body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; background: #f4f4f4; margin: 0; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #000; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
@@ -16,6 +16,13 @@
         <p>Acessando Painel Administrativo...</p>
     </div>
 
-
+    <script>
+        // Redireciona automaticamente para o admin.html assim que carregar
+        window.onload = () => {
+            setTimeout(() => {
+                window.location.href = "admin.html";
+            }, 500); // Meio segundo de delay apenas para o efeito visual
+        };
+    </script>
 </body>
 </html>
