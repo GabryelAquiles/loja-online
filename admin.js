@@ -17,22 +17,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// --- 0. TRAVA DE SEGURANÇA (VERIFICA SE ESTÁ LOGADO) ---
-onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        // Se não tiver usuário logado, manda de volta para o login
-        window.location.href = "login.html";
-    } else {
-        console.log("Acesso autorizado: " + user.email);
-    }
-});
-
-// Botão Sair (Logout)
-document.getElementById("btn-logout").addEventListener("click", () => {
-    signOut(auth).then(() => {
-        window.location.href = "login.html";
-    });
-});
 
 // 1. CARREGAR CONFIGURAÇÕES DA LOJA AO DIGITAR O SLUG
 document.getElementById("loja_id").addEventListener("blur", async (e) => {
