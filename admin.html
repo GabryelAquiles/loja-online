@@ -8,47 +8,23 @@
         .login-box { background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; text-align: center; }
         input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; background: #000; color: #fff; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        #mensagem-erro { color: red; font-size: 13px; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
+
     <div class="login-box">
         <h2>Painel Admin</h2>
-        <input type="email" id="email" placeholder="E-mail">
-        <input type="password" id="pass" placeholder="Senha"> <!-- O ID é 'pass' -->
-        <button id="btn-entrar">ENTRAR</button>
-        <p id="mensagem-erro">E-mail ou senha incorretos!</p>
+
+        <p>Clique abaixo para acessar o painel</p>
+        <button id="btn-entrar">ENTRAR NO PAINEL</button>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
-            authDomain: "aquiles-sw-saas.firebaseapp.com",
-            projectId: "aquiles-sw-saas",
-            storageBucket: "aquiles-sw-saas.appspot.com",
-            messagingSenderId: "878262536684",
-            appId: "1:878262536684:web:e32ac0b9755ca101e398c9"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+    <script>
 
         document.getElementById("btn-entrar").onclick = () => {
-            const e = document.getElementById("email").value;
-            const s = document.getElementById("pass").value; // AJUSTADO: aqui agora combina com o ID do input
-
-            signInWithEmailAndPassword(auth, e, s)
-                .then(() => {
-                    window.location.href = "admin.html";
-                })
-                .catch((error) => {
-                    console.error("Erro no Firebase:", error.code);
-                    document.getElementById("mensagem-erro").style.display = "block";
-                });
+            window.location.href = "admin.html";
         };
     </script>
+
 </body>
 </html>
