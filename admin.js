@@ -1,8 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, doc, updateDoc, query, where, getDocs, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// Importações necessárias para segurança
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// Configuração do seu Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyC6g9nuso280y5ezxSQyyuF5EljE9raz0M",
     authDomain: "aquiles-sw-saas.firebaseapp.com",
@@ -15,8 +14,8 @@ const firebaseConfig = {
 // Inicialização
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
+// --- NOTA: A trava de segurança (onAuthStateChanged) foi removida para acesso direto ---
 
 // 1. CARREGAR CONFIGURAÇÕES DA LOJA AO DIGITAR O SLUG
 document.getElementById("loja_id").addEventListener("blur", async (e) => {
@@ -93,7 +92,6 @@ document.getElementById("btn-cadastrar").addEventListener("click", async () => {
             await addDoc(collection(db, "produtos"), novoProduto);
             alert("Produto publicado com sucesso!");
             
-            // Limpar campos de texto
             document.getElementById("nome").value = "";
             document.getElementById("preco").value = "";
             document.getElementById("categoria_prod").value = "";
@@ -109,13 +107,14 @@ function listarProdutos(slug) {
     const q = query(collection(db, "produtos"), where("loja_id", "==", slug));
     onSnapshot(q, (s) => {
         const lista = document.getElementById("lista-produtos");
+        if (!lista) return;
         lista.innerHTML = "";
         s.forEach(dDoc => {
             const p = dDoc.data();
             lista.innerHTML += `
                 <div class="prod-item">
-                    <img src="${p.url_imagem}">
-                    <div style="flex:1">
+                    <img src="${p.url_imagem}" style="width:50px; height:50px; object-fit:cover;">
+                    <div style="flex:1; margin-left:10px;">
                         <strong>${p.nome}</strong><br>
                         <small>${p.categoria} | R$ ${p.preco}</small>
                     </div>
